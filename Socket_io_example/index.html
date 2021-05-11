@@ -29,6 +29,19 @@
 
         var form = document.getElementById('form');
         var input = document.getElementById('input');
+
+        document.addEventListener('keydown', buttondown, false);
+        document.addEventListener('keyup', buttonup, false);
+
+        function buttondown(e) {
+          //alert("Key pressed: "+ e.key)
+          socket.emit('key down', e.key);
+        }
+
+        function buttonup(e) {
+          //alert("Key pressed: "+ e.key)
+          socket.emit('key up', e.key);
+        }
             
         form.addEventListener('submit', function(e) {
             e.preventDefault();

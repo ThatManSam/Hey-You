@@ -17,14 +17,21 @@ io.on('connection', (socket) => {
         console.log(nickname + " connected");
     });
     
-    socket.on('disconnect', (client) => {
-        client.emit('nickname')
+    socket.on('disconnect', (socket) => {
         io.emit('chat message bold', 'User disconnected');
         console.log('user disconnected');
     });
 
     socket.on('chat message', (user, msg) => {
         console.log(user + ': ' + msg);
+    });
+
+    socket.on('key down', (value) => {
+        console.log('Key down: ' + value);
+    });
+
+    socket.on('key up', (value) => {
+        console.log('Key up: ' + value);
     });
 
     socket.on('chat message', (user, msg) => {
