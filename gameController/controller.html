@@ -2,15 +2,49 @@
 <html>
   <head>
     <title>Socket.IO Controller</title>
+    <style>
+        .arrow {
+            position: relative;
+            display: inline-block;
+            width: 49%;
+        }
+
+        .text {
+          padding-top: 60px;
+          padding-bottom: 60px;
+          text-align: center;
+          width: 100%;
+          font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+          color: black;
+          font-size: 50px;
+          text-decoration: none;
+          background-color:cadetblue;
+        }
+
+        .outer {
+          width: auto;
+          height: 100%;
+          margin: auto;
+          /*padding-top: 40%;*/
+          display: flex;
+          align-items: center;
+          justify-items: center;
+        }
+
+        html, body {
+          height: 100%;
+        }
+
+        .inner {
+          margin: auto;
+          width: 75%;
+        }
+    </style>
   </head>
   <body>
-    <a href="http://localhost:3001/game">Link to game</a>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        var nickname = prompt("Enter a nickname: ");
         var socket = io();
-
-        socket.emit('nickname', nickname);
 
         var form = document.getElementById('form');
         var input = document.getElementById('input');
@@ -21,10 +55,12 @@
         function buttondown(e) {
           if (e.key == 'ArrowLeft'){
             console.log('Left');
+            document.getElementById("left").style.backgroundColor = "burlywood";
             socket.emit('left key down');
           }
           if (e.key == 'ArrowRight'){
             console.log('Right');
+            document.getElementById("right").style.backgroundColor = "burlywood";
             socket.emit('right key down');
           }
           //alert("Key pressed: "+ e.key)
@@ -33,14 +69,22 @@
 
         function buttonup(e) {
           if (e.key == 'ArrowLeft'){
+            document.getElementById("left").style.backgroundColor = "cadetblue";
             socket.emit('left key up');
           }
           if (e.key == 'ArrowRight'){
+            document.getElementById("right").style.backgroundColor = "cadetblue";
             socket.emit('right key up');
           }
           //alert("Key pressed: "+ e.key)
           //socket.emit('key up', e.key);
         }
     </script>
+    <div class="outer">
+      <ul class="inner">
+        <li class="arrow"><div id="left" class="text">&#60;</div></li>
+        <li class="arrow"><div id="right" class="text">&#62;</div></li>
+      </ul>
+    </div>
   </body>
 </html>
