@@ -6,49 +6,35 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/controller.html');
+});
+
+app.get('/game', (req, res) => {
+    res.sendFile(__dirname + '/controlGame.html');
 });
 
 io.on('connection', (socket) => {
-    //io.emit('chat message bold', 'User connected');
-    //console.log('a user connected');
-    socket.on('nickname', (nickname) =>{
-        io.emit('chat message bold', nickname + " connected");
-        console.log(nickname + " connected");
-    });
+    console.log('a user connected');
     
-    socket.on('disconnect', (client) => {
-        client.emit('nickname')
-        io.emit('chat message bold', 'User disconnected');
+    socket.on('disconnect', (socket) => {
         console.log('user disconnected');
     });
 
-    socket.on('chat message', (user, msg) => {
-        console.log(user + ': ' + msg);
+    socket.on('left key down', () => {
+        console.log("Left key down");
+        io.emit('left down');
     });
-
-    socket.on('chat message', (user, msg) => {
-        socket.broadcast.emit('chat message', user, msg);
+    socket.on('left key up', () => {
+        io.emit('left up');
     });
-});
-
-/*io.on('connection', (socket) => {
-    socket.on('chat message', (user, msg) => {
-        console.log(user + ': ' + msg);
+    socket.on('right key down', () => {
+        io.emit('right down');
     });
-    socket.on('chat message', (user, msg) => {
-        socket.broadcast.emit('chat message', user, msg);
-        //io.emit('chat message', user, msg);
+    socket.on('right key up', () => {
+        io.emit('right up');
     });
 });
 
-/*io.on('connection', (socket) => {
-    socket.on('chat message', (user, msg) => {
-        socket.broadcast.emit('chat message', user, msg);
-        //io.emit('chat message', user, msg);
-    });
-});*/
-
-server.listen(3000, () => {
+server.listen(3001, () => {
     console.log('listening on *:3000');
 });

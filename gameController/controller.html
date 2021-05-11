@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO Controller</title>
+  </head>
+  <body>
+    <a href="http://localhost:3001/game">Link to game</a>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var nickname = prompt("Enter a nickname: ");
+        var socket = io();
+
+        socket.emit('nickname', nickname);
+
+        var form = document.getElementById('form');
+        var input = document.getElementById('input');
+
+        document.addEventListener('keydown', buttondown, false);
+        document.addEventListener('keyup', buttonup, false);
+
+        function buttondown(e) {
+          if (e.key == 'ArrowLeft'){
+            console.log('Left');
+            socket.emit('left key down');
+          }
+          if (e.key == 'ArrowRight'){
+            console.log('Right');
+            socket.emit('right key down');
+          }
+          //alert("Key pressed: "+ e.key)
+          //socket.emit('key down', e.key);
+        }
+
+        function buttonup(e) {
+          if (e.key == 'ArrowLeft'){
+            socket.emit('left key up');
+          }
+          if (e.key == 'ArrowRight'){
+            socket.emit('right key up');
+          }
+          //alert("Key pressed: "+ e.key)
+          //socket.emit('key up', e.key);
+        }
+    </script>
+  </body>
+</html>
