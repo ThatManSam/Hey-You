@@ -6,11 +6,15 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/controller.html');
+    res.sendFile(__dirname + '/index.html');
 });
 
 app.get('/game', (req, res) => {
     res.sendFile(__dirname + '/controlGame.html');
+});
+
+app.get('/controller', (req, res) => {
+    res.sendFile(__dirname + '/controller.html');
 });
 
 io.on('connection', (socket) => {
