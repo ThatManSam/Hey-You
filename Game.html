@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Drawing a Polygon</title>
+	<style>
+		.slidecontainer {
+		  width: 50%;
+		  align-items: center;
+		}
+		
+		.slider {
+		  -webkit-appearance: none;
+		  width: 100%;
+		  height: 25px;
+		  background: #d3d3d3;
+		  outline: none;
+		  opacity: 0.7;
+		  -webkit-transition: .2s;
+		  transition: opacity .2s;
+		  align-items: center;
+		}
+		
+		.slider:hover {
+		  opacity: 1;
+		}
+		
+		.slider::-webkit-slider-thumb {
+		  -webkit-appearance: none;
+		  appearance: none;
+		  width: 25px;
+		  height: 25px;
+		  background: #04AA6D;
+		  cursor: pointer;
+		}
+		
+		.slider::-moz-range-thumb {
+		  width: 25px;
+		  height: 25px;
+		  background: #04AA6D;
+		  cursor: pointer;
+		}
+
+		body {
+  			background-color: rgba(84, 111, 83, 0.768);
+		}
+
+		canvas {
+    		padding: 0;
+    		margin: auto;
+    		display: block;
+    		width: 600px;
+    		height: 600px;
+    		position: absolute;
+    		top: 0;
+    		bottom: 0;
+    		left: 0;
+    		right: 0;
+		}
+		</style>
+</head>
+<body>
+	<centre>
+		<div class="slidecontainer" style = "text-align:center;">
+			<input type="range" min="2" max="10" value="2" class="slider" id="myRange">
+			<p>'Players': <span id="demo"></span></p>
+		</div>
+		<div style = "text-align:center;">
+			<canvas id="myCanvas" width="600" height="600" style="border: 1px solid black;">Your browser does not support the HTML5 canvas tag. </canvas>
+		</div>
+		<button type="button" onclick="">Start Game</button>
+	</centre>
+	<script>
+		var slider = document.getElementById("myRange");
+		var output = document.getElementById("demo");
+		output.innerHTML = slider.value;
+
+		slider.oninput = function() 
+		{
+  			output.innerHTML = this.value;
+			updateCanvas();
+		}
+		var canvas = document.getElementById('myCanvas')
+		var ctx = canvas.getContext('2d');
+		var radius=250;
+		drawEnvironment();
+
+		
+
+
+		//Functions
+
+		//update canvas
+		function updateCanvas() {
+			drawEnvironment();
+		}
+
+		//draw canvas
+		function drawEnvironment() {
+			//Clear canvas
+			canvas.width = canvas.width;
+			//Calc num sides and angle for shape
+			var numberOfSides = 2 * slider.value;
+			var angle = 2*Math.PI/numberOfSides;
+			//Begin drawing
+ 			ctx.beginPath();
+			var RecRadius;
+			//Move to centre of canvas
+			ctx.translate(canvas.width/2, canvas.height/2);
+
+			
+			//square
+			if(numberOfSides == 4)
+			{
+				//Make square slightly smaller
+				RecRadius = (3/4)*radius;
+				ctx.moveTo(RecRadius, RecRadius);  
+			} 
+			//non square polygon
+			else
+			{
+				ctx.moveTo(radius, 0);  
+				// ctx.arc(radius, radius, radius/2, 0, 2*Math.PI)
+				// ctx.stroke;
+			 
+			}    
+			
+			//square
+			if(numberOfSides == 4)
+			{
+			 	ctx.lineTo(-RecRadius, RecRadius);
+				ctx.lineTo(-RecRadius, -RecRadius);
+				ctx.lineTo(RecRadius, -RecRadius);
+				ctx.lineTo(RecRadius, RecRadius);
+				
+			}
+			//non square polygon
+			else
+			{
+				for (var i=1; i<=numberOfSides; i++) {
+			 	ctx.lineTo(radius*Math.cos(i * angle), radius*Math.sin(i * angle));
+				}
+			}
+			ctx.fillStyle = "grey";
+			ctx.strokeStyle = "red";
+			ctx.fill();
+ 			ctx.stroke();
+			
+			// ctx.beginPath();
+			// ctx.translate(canvas.width/2, canvas.height/2);
+			// for (var i=1; i<=numberOfSides; i++) {
+			//  	ctx.lineTo(2*radius, 2*radius);
+			// }			
+		}
+		//st.js;
+	</script>
+</body>
+</html>
