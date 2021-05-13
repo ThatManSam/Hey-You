@@ -8,12 +8,15 @@ class player {
     moveRight = false;
     moveUp = false;
     moveDown = false;
+    colour = 
+    number;
 
-    constructor(newX, newY, newType = 0, newSocket){
+    constructor(newX, newY, newType = 0, newSocket, newNumebr){
         x = newX;
         y = newY;
         type = newType;
         socket = newSocket;
+        number = newNumebr; // Player number in array
 
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
