@@ -4,8 +4,9 @@ var canvas = document.getElementById('gameCanvas');
 var ctx = canvas.getContext('2d');
 
 var players = [];
-var taggers;
-var playerCount = 1;
+var playerCount = 0;
+var taggers = [];
+var taggerCount = 0;
 
 document.addEventListener("");
 
@@ -21,9 +22,13 @@ function draw(){
 
 // Have to add the socket here
 function playerAdd(newSocket){
-    
-    players[playerCount] = player(0,canvas.height/2,0,newSocket,playerCount++);
-    
+    if (taggerCount == 0){
+        taggers[taggerCount]  = player(0,canvas.height/2,1,newSocket,taggerCount++);
+        
+    } else {
+        players[playerCount] = player(0,canvas.height/2,0,newSocket,playerCount++);
+    }
+
     // Any other logic for adding a player
 
 }
@@ -36,6 +41,7 @@ function playerMove(){
 
 function tagged(playerTug){
 
+    playerTug.tagged
 }
 
 function include(file) {

@@ -8,7 +8,7 @@ class player {
     moveRight = false;
     moveUp = false;
     moveDown = false;
-    colour = 
+    colour = color(64,224,208); //turquoise //Red = (255,0,0)
     number;
 
     constructor(newX, newY, newType = 0, newSocket, newNumebr){
@@ -17,6 +17,8 @@ class player {
         type = newType;
         socket = newSocket;
         number = newNumebr; // Player number in array
+
+        
 
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
@@ -57,10 +59,14 @@ class player {
         }
     }
 
+    tagged(){
+        this.colour = color(255,0,0);
+    }
+
     draw(ctx){
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = this.colour;
         ctx.fill();
         ctx.closePath();
     }
