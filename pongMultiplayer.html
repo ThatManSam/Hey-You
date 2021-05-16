@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Gamedev Canvas Workshop</title>
+    <title>Pong Multiplayer</title>
     <style>
         * { padding: 0; margin: 0; }
         canvas {
@@ -47,9 +47,9 @@
         var rand;
         var randAngleToggle = false;
         var randResizeToggle = false;
-        var resizeAmount = 100;
+        var resizeAmount = 200;
         var resizeTick = resizeAmount;
-        var resizePerTick = 2;
+        var resizePerTick = 1;
         var canvasSizeIncrease = false;
         var paddleHeight = 10;
         var paddleWidth = 75;
@@ -192,6 +192,11 @@
             }
             else if(e.key == "+") {
                 rightPlayerDownPress = false;
+            }
+
+            //Resize
+            if(e.key == " " ) {
+                randResizeToggle = false;
             }
         }
 
@@ -399,7 +404,7 @@
             }
 
             //Left player
-            if(leftPlayerUpPress && leftPaddleY > 0) {
+            if(leftPlayerUpPress && leftPaddleY > 0) {  
                 leftPaddleY -= paddleSpeed;
             }
             else if(leftPlayerDownPress && leftPaddleY < canvas.height-paddleWidth) {
