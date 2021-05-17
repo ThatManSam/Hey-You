@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Pong Multiplayer</title>
+    <style>
+        * { padding: 0; margin: 0; }
+        canvas {
+            background: rgb(201, 201, 201); 
+            display: block; 
+            margin: auto; 
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div style = "text-align:center;">
+        <canvas id="myCanvas" ></canvas>
+        <p>Bottom paddle: arrow keys</p>
+        <p>Top paddle: A/D</p>
+        <p>Left paddle: O/L</p>
+        <p>Right paddle: -/+</p>
+        <p>All paddles: mouse</p>
+        Toggle random rebounds: <input type="checkbox" id="myCheck" onclick="checkRandomAngle()">
+        Toggle resize: <button onclick="toggleRandomResize()">Resize</button> or spacebar
+        
+    </div>
+    
+
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        ctx.canvas.height = window.innerHeight*2/3;
+        ctx.canvas.width = window.innerHeight*2/3;
+        var ballRadius = 10;
+        var x = canvas.width/2;
+        var y = canvas.height-30;
+        var ballSpeed = 5;
+        var paddleSpeed = 15;
+        var speedRatio = Math.sqrt((ballSpeed*ballSpeed) + (ballSpeed*ballSpeed));
+        var dx = ballSpeed;
+        var dy = -ballSpeed;
+        var rand;
+        var randAngleToggle = false;
+        var randResizeToggle = false;
+        var resizeAmount = 200;
+        var resizeTick = resizeAmount;
+        var resizePerTick = 1;
+        var canvasSizeIncrease = false;
+        var paddleHeight = 10;
+        var paddleWidth = 75;
+        
+        //player paddle positions
+        var bottomPaddleX = (canvas.width-paddleWidth)/2;
+        var bottomPaddleY = (canvas.height-paddleWidth)/2;
+
+        var topPaddleX = (canvas.width-paddleWidth)/2;
+        var topPaddleY = (canvas.height-paddleWidth)/2;
+
+        var leftPaddleX = (canvas.width-paddleWidth)/2;
+        var leftPaddleY = (canvas.height-paddleWidth)/2;
+
+        var rightPaddleX = (canvas.width-paddleWidth)/2;
+        var rightPaddleY = (canvas.height-paddleWidth)/2;
+        //player button statuses
+        var bottomPlayerRightPress = false;
+        var bottomPlayerLeftPress = false;
+
+        var topPlayerLeftPress = false;
+        var topPlayerRightPress = false;
+
+        var leftPlayerUpPress = false;
+        var leftPlayerDownPress = false;
+
+        var rightPlayerUpPress = false;
+        var rightPlayerDownPress = false;
+
+        function checkRandomAngle() {
+            var checkBox = document.getElementById("myCheck");
+            randAngleToggle = checkBox.checked;
+            //alert(randAngleToggle);
+        }
+
+        function toggleRandomResize() {
+            randResizeToggle = true;
+        }
+
+        function resizeCanvas() {
+
+            
+            if(resizeTick > 0 && canvasSizeIncrease == false) {
+                ctx.canvas.width -= resizePerTick;
+                ctx.canvas.height -= resizePerTick;
+                //draw(); 
+                resizeTick -= 1;
+                setTimeout(resizeCanvas, 10);
+            }
+            else if (resizeTick < resizeAmount){
+                canvasSizeIncrease = true;
+                ctx.canvas.width += resizePerTick;
+                ctx.canvas.height += resizePerTick;
+                //draw();
+                resizeTick += 1;
+                if(resizeTick == resizeAmount) return;
+                setTimeout(resizeCanvas, 10);
+                
+            }
+            else {
+                canvasSizeIncrease = false;
+            }
+            
+        }
+
+
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+        document.addEventListener("mousemove", mouseMoveHandler, false);
+
+        function keyDownHandler(e) {
+            //Bottom player
+            if(e.key == "Right" || e.key == "ArrowRight") {
+                bottomPlayerRightPress = true;
+            }
+            
+            else if(e.key == "Left" || e.key == "ArrowLeft") {
+                bottomPlayerLeftPress = true;
+            }
+
+            //Top player
+            if(e.key == "a") {
+                topPlayerLeftPress = true;
+            }       
+            else if(e.key == "d") {
+                topPlayerRightPress = true;
+            }
+
+            //Left player
+            if(e.key == "o") {
+                leftPlayerUpPress = true;
+            }
+            else if(e.key == "l") {
+                leftPlayerDownPress = true;
+            }
+
+            //Right player
+            if(e.key == "-" ) {
+                rightPlayerUpPress = true;
+            }
+            else if(e.key == "+") {
+                rightPlayerDownPress = true;
+            }
+
+            //Resize
+            if(e.key == " " ) {
+                randResizeToggle = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            //Bottom player
+            if(e.key == "Right" || e.key == "ArrowRight") {
+                bottomPlayerRightPress = false;
+            }
+            else if(e.key == "Left" || e.key == "ArrowLeft") {
+                bottomPlayerLeftPress = false;
+            }
+
+            //Top player
+            if(e.key == "a") {
+                topPlayerLeftPress = false;
+            }       
+            else if(e.key == "d") {
+                topPlayerRightPress = false;
+            }
+
+            //Left player
+            if(e.key == "o") {
+                leftPlayerUpPress = false;
+            }
+            else if(e.key == "l") {
+                leftPlayerDownPress = false;
+            }
+
+            //Right player
+            if(e.key == "-" ) {
+                rightPlayerUpPress = false;
+                alert(right);
+            }
+            else if(e.key == "+") {
+                rightPlayerDownPress = false;
+            }
+
+            //Resize
+            if(e.key == " " ) {
+                randResizeToggle = false;
+            }
+        }
+
+        function mouseMoveHandler(e) {
+        var relativeX = e.clientX - canvas.offsetLeft;
+        var relativeY = e.clientY - canvas.offsetTop;
+        if(relativeX > 0 && relativeX < canvas.width) {
+            bottomPaddleX = relativeX - paddleWidth/2;
+            topPaddleX = relativeX - paddleWidth/2;
+            leftPaddleY = relativeY - paddleWidth/2
+            rightPaddleY = relativeY - paddleWidth/2
+
+        }
+        if(relativeY > 0 && relativeY < canvas.height) {
+            bottomPaddleY = relativeY - paddleWidth/2;
+            topPaddleY = relativeY - paddleWidth/2;
+        }
+        }
+        
+
+
+        function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+        ctx.fillStyle = "#000000";
+        ctx.fill();
+        ctx.closePath();
+        }
+        function drawPaddle() {
+        //bottom
+        ctx.beginPath();
+        ctx.rect(bottomPaddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+
+        //top
+        ctx.beginPath();
+        ctx.rect(topPaddleX, 0, paddleWidth, paddleHeight);
+        ctx.fillStyle = "#D8715B";
+        ctx.fill();
+        ctx.closePath();
+
+        //left
+        ctx.beginPath();
+        ctx.rect(0, leftPaddleY, paddleHeight, paddleWidth);
+        ctx.fillStyle = "#79CC72";
+        ctx.fill();
+        ctx.closePath();
+        
+
+        //right
+        ctx.beginPath();
+        ctx.rect(canvas.width - paddleHeight, rightPaddleY, paddleHeight, paddleWidth);
+        ctx.fillStyle = "#C072CC";
+        ctx.fill();
+        ctx.closePath();
+        }
+
+        function draw() {
+            //ctx.canvas.height = window.innerHeight*2/3;
+            //ctx.canvas.width = window.innerHeight*2/3;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if(randResizeToggle == true) {
+                
+                resizeCanvas();
+                randResizeToggle = false;
+            }
+
+            //drawBricks();
+            drawBall();
+            drawPaddle();
+
+            //Left check
+            if(x + dx > canvas.width-ballRadius) {
+                dx = -dx;
+            }
+            //right check
+            else if(x + dx < ballRadius) {
+                dx = -dx;
+            }
+            //Top check
+            if(y + dy < ballRadius) {
+                if(x > topPaddleX && x < topPaddleX + paddleWidth) {
+                    if(randAngleToggle == true){                       
+                        //Random to decide what angle ball bounces at
+                        rand = Math.floor(Math.random() * 2);                   
+                
+                        if(dx > 0) { //Ball going right, change right velocity
+                            dx = ballSpeed;
+                            dy = ballSpeed;
+                            //Add randomness
+                            if(rand == 1) { //Change dy, increase
+                                dy += 1;
+                                //Maintain speed
+                                dx = Math.sqrt(dy + speedRatio);
+                            }
+                            else { //Change dx, increase
+                                dx += 1;
+                                dy = Math.sqrt(dx + speedRatio);
+                            }
+                            //dy += randY;
+                            //dx += randX;
+                        }
+                        else { //Ball going left, change left velocity
+                            dx = -ballSpeed;
+                            dy = ballSpeed;
+                            //Add randomness
+                            if(rand == 1) { //Change dy, increase
+                                dy += 1;
+                                //Maintain speed
+                                dx = -Math.sqrt(Math.abs(dy) + speedRatio);
+                            }
+                            else { //Change dx, increase
+                                dx -= 1;
+                                dy = Math.sqrt(Math.abs(dx) + speedRatio);
+                            }
+                            //dy += randY;
+                            //dx += randX;
+                        }
+                    }
+                    else {
+                        dy = -dy;
+                    }
+                }
+                //Player missed
+                else {
+                    x = canvas.width/2;
+                    y = canvas.height/4;
+                    dx = ballSpeed;
+                    dy = ballSpeed;
+                    bottomPaddleX = (canvas.width-paddleWidth)/2; ///////////// reset all paddles ////////////
+                }
+            }
+            //Bottom check
+            else if(y + dy > canvas.height-ballRadius) {
+                if(x > bottomPaddleX && x < bottomPaddleX + paddleWidth) {
+                    if(randAngleToggle == true) {
+                        //Random to decide what angle ball bounces at
+                        rand = Math.floor(Math.random() * 2); //0 or 1
+
+                        if(dx > 0) { //Ball going right, change right velocity
+                            dx = ballSpeed;
+                            dy = -ballSpeed;
+                            //Add randomness
+                            if(rand == 1) { //Change dy, increase
+                                dy -= 1;
+                                //Maintain speed
+                                dx = Math.sqrt(Math.abs(dy) + speedRatio);
+                            }
+                            else { //Change dx, increase
+                                dx += 1;
+                                dy = -Math.sqrt(dx + speedRatio);
+                            }
+                            //dy += randY;
+                            //dx += randX;
+                        }
+                        else { //Ball going left, change left velocity
+                            dx = -ballSpeed;
+                            dy = -ballSpeed;
+                            //Add randomness
+                            if(rand == 1) { //Change dy, increase
+                                dy -= 1;
+                                //Maintain speed
+                                dx = -Math.sqrt(Math.abs(dy) + speedRatio);
+                            }
+                            else { //Change dx, increase
+                                dx -= 1;
+                                dy = -Math.sqrt(Math.abs(dx) + speedRatio);
+                            }
+                            //dy += randY;
+                            //dx += randX;
+                        }
+                    }
+                    else {
+                        dy = -dy;
+                    }
+
+                }
+                //Player missed
+                else {
+                    x = canvas.width/2;
+                    y = canvas.height*3/4;
+                    dx = ballSpeed;
+                    dy = -ballSpeed;
+                    bottomPaddleX = (canvas.width-paddleWidth)/2;
+                }
+            }
+
+            //Move paddles
+            //Bottom player
+            if(bottomPlayerRightPress && bottomPaddleX < canvas.width-paddleWidth) {
+                bottomPaddleX += paddleSpeed;
+            }
+            else if(bottomPlayerLeftPress && bottomPaddleX > 0) {
+                bottomPaddleX -= paddleSpeed;
+            }
+
+            //Top player
+            if(topPlayerRightPress && topPaddleX < canvas.width-paddleWidth) {
+                topPaddleX += paddleSpeed;
+            }
+            else if(topPlayerLeftPress && topPaddleX > 0) {
+                topPaddleX -= paddleSpeed;
+            }
+
+            //Left player
+            if(leftPlayerUpPress && leftPaddleY > 0) {  
+                leftPaddleY -= paddleSpeed;
+            }
+            else if(leftPlayerDownPress && leftPaddleY < canvas.height-paddleWidth) {
+                leftPaddleY += paddleSpeed;
+            }
+
+            //Right player
+            if(rightPlayerUpPress && rightPaddleY > 0) {
+                rightPaddleY -= paddleSpeed;
+            }
+            else if(rightPlayerDownPress && rightPaddleY < canvas.height-paddleWidth) {
+                rightPaddleY += paddleSpeed;
+            }
+
+            //Move ball
+            x += dx;
+            y += dy;
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+
+</body>
+</html>
