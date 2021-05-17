@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+        .arrow {
+            position: relative;
+            display: inline-block;
+            width: 50%;
+        }
+
+        .text {
+          padding-top: 10px;
+          padding-bottom: 10px;
+          text-align: center;
+          width: 100%;
+          font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+          color: black;
+          font-size: 50px;
+          text-decoration: none;
+          background-color:cadetblue;
+        }
+
+        h1 {
+          text-align: center;
+          width: 100%;
+          font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+          color: white;
+          font-size: 30px;
+          text-decoration: none;
+          background-color: darkseagreen;
+        }
+
+        .outer {
+          width: auto;
+          margin: auto;
+          /*padding-top: 40%;*/
+          display: flex;
+          align-items: center;
+          justify-items: center;
+        }
+
+        html, body {
+          height: 100%;
+        }
+
+        .inner {
+          margin: auto;
+          width: 75%;
+        }
+    </style>
+</head>
+<body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socketType = 'game';
+        var url = window.location.href;
+        var socket = io.connect(url + "?data=" + socketType);
+        var socket = io();
+        var controllers = [];
+
+        // When a controller connects
+        socket.on('controller connection', (controller) => {
+            // Add it to the list of controllers
+            controllers.push(controller);
+            // create a new display for it
+            newController(controller);
+        });
+
+        // When a controller disconnects
+        socket.on('controller disconnection', (controller) => {
+            try{
+                // remove it from the list of controllers
+                var index = controllers.indexOf(controller);
+                controllers.splice(index, 1);
+                // remove its display
+                removeController(controller);
+            }
+            catch(e){
+                console.log("ERROR: " + e);
+                return;
+            }
+        });
+
+        // FOR ALL
+        // changes the color of the left or right arrow of the display of that controllers section
+        socket.on('left down', (id) => {
+            document.getElementById(id).getElementsByClassName("left")[0].style.backgroundColor = "burlywood";
+            leftPressed = true;
+            //document.dispatchEvent(leftarrowdown);
+        });
+        socket.on('left up', (id) => {
+            document.getElementById(id).getElementsByClassName("left")[0].style.backgroundColor = "cadetblue";
+            leftPressed = false;
+            //document.dispatchEvent(leftarrowup);
+        });
+        socket.on('right down', (id) => {
+            document.getElementById(id).getElementsByClassName("right")[0].style.backgroundColor = "burlywood";
+            rightPressed = true;
+            //document.dispatchEvent(rightarrowdown);
+        });
+        socket.on('right up', (id) => {
+            document.getElementById(id).getElementsByClassName("right")[0].style.backgroundColor = "cadetblue";
+            rightPressed = false;
+            //document.dispatchEvent(rightarrowup);
+        });
+        
+        // Creates a new HTML div for a new controller with its ID
+        var newController = function(id) {
+            console.log("Element added: " + id);
+            document.getElementById("controls-display").innerHTML += '<div class="outer" id="' + id + '"><ul class="inner"><h1>' + id + '</h1><li class="arrow"><div class="left text">&#60;</div></li><li class="arrow"><div class="text right">&#62;</div></li></ul></div>'
+        }
+
+        // Removes a controllers HTML display
+        var removeController = function(id) {
+            console.log("Element removed: " + id);
+            document.getElementById(id).remove();
+        }
+    </script>
+
+    <div id="controls-display">
+        <!--<div class="outer">
+            <h1>Controller 1</h1>
+            <ul class="inner">
+                <li class="arrow"><div id="left" class="text">&#60;</div></li>
+                <li class="arrow"><div id="right" class="text">&#62;</div></li>
+            </ul>
+        </div>
+        <div class="outer">
+            <h1>Controller 2</h1>
+            <ul class="inner">
+                <li class="arrow"><div id="left" class="text">&#60;</div></li>
+                <li class="arrow"><div id="right" class="text">&#62;</div></li>
+            </ul>
+        </div>
+        <div class="outer">
+            <h1>Controller 3</h1>
+            <ul class="inner">
+                <li class="arrow"><div id="left" class="text">&#60;</div></li>
+                <li class="arrow"><div id="right" class="text">&#62;</div></li>
+            </ul>
+        </div>
+        <div class="outer">
+            <h1>Controller 4</h1>
+            <ul class="inner">
+                <li class="arrow"><div id="left" class="text">&#60;</div></li>
+                <li class="arrow"><div id="right" class="text">&#62;</div></li>
+            </ul>
+        </div>-->
+    </div>
+</body>
+</html>
