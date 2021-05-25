@@ -4,17 +4,13 @@ var canvas = document.getElementById('gameCanvas');
 var ctx = canvas.getContext('2d');
 
 var players = [];
-var playerCount = 0;
 var taggers = [];
-var taggerCount = 0;
-
-document.addEventListener("");
 
 function draw(){
 
     //Draw players
 
-    //Move Players (Collision check)
+    playerMove();
     
     // Will need to implement a delay
     draw();
@@ -22,11 +18,11 @@ function draw(){
 
 // Have to add the socket here
 function playerAdd(newSocket){
-    if (taggerCount == 0){
-        taggers[taggerCount]  = player(0,canvas.height/2,1,newSocket,taggerCount++);
+    if (taggers.length == 0){
+        taggers[taggers.length] = player(0,canvas.height/2,1,newSocket,taggers.length);
         
     } else {
-        players[playerCount] = player(0,canvas.height/2,0,newSocket,playerCount++);
+        players[players.length] = player(0,canvas.height/2,0,newSocket,players.length);
     }
 
     // Any other logic for adding a player
@@ -35,8 +31,37 @@ function playerAdd(newSocket){
 
 function playerMove(){
     // Check if move is possible i.e. doesn't collide with tagger
+    for(var i=0; i<players.length; i++) {
+        players[i].move()
+        for(var j=0; j<taggers.length; j++){
+            var difx = players[i].x - taggers[j].x;
+            var dify = players[i].y - taggers[j].y;
+            var distance = Math.sqrt(difx * difx + dify * dify);
 
+            if (distance < players[i].radius + taggers[j].radius){
+                // Become tagger
+            }
+        }
+    }
 
+}
+
+function taggerMove(){
+    for(var i=0; i<taggers.length; i++) {
+
+        if (tagegrs[i].x - tagegrs[i].radius < 15 ) {
+            
+        }
+
+        taggers[i].move()
+
+        // Boundary collision check
+            
+            
+            
+
+        
+    }
 }
 
 function tagged(playerTug){

@@ -4,6 +4,8 @@ class player {
     radius = 5;
     x;
     y;
+    dx = 2;
+    dy = 2;
     moveLeft = false;
     moveRight = false;
     moveUp = false;
@@ -18,11 +20,14 @@ class player {
         socket = newSocket;
         number = newNumebr; // Player number in array
 
-        
-
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
 
+    }
+
+    position(){
+        let position = [this.x - this.radius, this.x + this.radius, this.y - this.radius, this.y + this.radius]
+        return position;
     }
 
     keyDownHandler(e){
@@ -69,5 +74,29 @@ class player {
         ctx.fillStyle = this.colour;
         ctx.fill();
         ctx.closePath();
+    }
+
+    move(newType, ctx){
+        if (newType != type){
+            this.typeChange(newType);
+        }
+
+        if (this.moveLeft && x >= 0 + this.dx){
+            this.x -= this.dx;
+        }
+        if (this.moveRight && x <= ctx.width - this.dx){
+            this.x += this.dx;
+        }
+        if (this.moveUp && y >= 0 + this.dy){
+            this.y -= this.dy;
+        }
+        if (this.moveDown && y <= ctx.height - this.dy){
+            this.y += this.dy;
+        }
+
+    }
+
+    typeChange(newType){
+
     }
 }
