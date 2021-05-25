@@ -19,7 +19,7 @@ app.get('/controller', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('a user connected');
-    
+    socket.
     socket.on('disconnect', (socket) => {
         console.log('user disconnected');
     });
