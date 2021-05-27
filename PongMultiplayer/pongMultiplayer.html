@@ -358,21 +358,28 @@
                 powerup.colourCounter = 0;
             }
             ctx.fillStyle = powerup.colour;
-            ctx.fillRect(powerup.x - powerup.size/2, powerup.y - powerup.size/2, powerup.size, powerup.size);   
+            ctx.fillRect(powerup.x, powerup.y, powerup.size, powerup.size);   
             powerup.colourCounter++;      
 
             ctx.beginPath();
-            ctx.rect(powerup.x - powerup.size/2, powerup.y - powerup.size/2, powerup.size, powerup.size);
+            ctx.rect(powerup.x, powerup.y, powerup.size, powerup.size);
             ctx.fillStyle = "#000000";
             ctx.stroke();
             ctx.closePath();
+
+            //Temp
+            // ctx.beginPath();
+            // ctx.rect(powerup.x - powerup.size/2, powerup.y - powerup.size/2, powerup.size, powerup.size);
+            // ctx.fillStyle = "#000000";
+            // ctx.stroke();
+            // ctx.closePath();
 
             var size = powerup.size + 5;
             var font = size + "px serif";
             ctx.font = font;
             //alert(font);
             ctx.textAlign = "center";
-            ctx.fillText('?', powerup.x, powerup.y - powerup.size/2 + powerup.size - 3);
+            ctx.fillText('?', powerup.x + powerup.size/2, powerup.y + powerup.size - 3);
             
         }
 
@@ -651,6 +658,7 @@
             && ball.y + ball.dy < powerup.y + powerup.size + ballRadius) {
                 var player = ball.owner;
                 document.getElementById("status").innerHTML = player;
+                //alert('collision');
                 //alert('player :' + player);
                 powerup.active = false;
                 drawPowerup(powerup);
