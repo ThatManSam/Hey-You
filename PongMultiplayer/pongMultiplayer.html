@@ -66,6 +66,17 @@
         var ballRadius = 10;
         var paddleSpeed = 10;   //Note: paddle speed can only be 2, 5 or 10
         var speedRatio = Math.sqrt((ballSpeed*ballSpeed) + (ballSpeed*ballSpeed));
+        var rand;
+        var randAngleToggle = false;
+        var relativeAngleReboundToggle = false;
+        var randResizeToggle = false;
+        var resizeAmount = 200;
+        var resizeTick = resizeAmount;
+        var resizePerTick = 1;
+        var canvasSizeIncrease = false;
+        var paddleHeight = 10;
+        var paddleWidth = 70;   //Note: must be multiple of 10
+        var borderWidth = Math.round(Math.round(0.1 * canvas.width)/10)*10; //Round to whole number and round to nearest 10
 
         // Colours
         // https://www.reddit.com/r/coolguides/comments/njqt0x/color_combinations_that_go_well_with_each_other/
@@ -83,7 +94,8 @@
             y: canvas.height/2,
             dx: -ballSpeed,
             dy: ballSpeed,
-            colour: "#000000"
+            colour: "#000000",
+            owner: 'none'
         };
 
         //Ball 2
@@ -93,19 +105,29 @@
         var dy2 = ballSpeed;
         var ballColour = "#000000";
 
+        //Powerup 1
+        var powerup1 = {
+            x: 10,
+            y: 10,
+            size: borderWidth/2,
+            active: false,
+            colourCounter: 10,
+            colour: "#000000"
+        };
+
+        //Powerup 2
+        var powerup2 = {
+            x: 10,
+            y: 10,
+            size: borderWidth/2,
+            active: false,
+            colourCounter: 10,
+            colour: "#000000"
+        };
+
         
         
-        var rand;
-        var randAngleToggle = false;
-        var relativeAngleReboundToggle = false;
-        var randResizeToggle = false;
-        var resizeAmount = 200;
-        var resizeTick = resizeAmount;
-        var resizePerTick = 1;
-        var canvasSizeIncrease = false;
-        var paddleHeight = 10;
-        var paddleWidth = 70;   //Note: must be multiple of 10
-        var borderWidth = Math.round(Math.round(0.1 * canvas.width)/10)*10; //Round to whole number and round to nearest 10
+        
 
         //Note: paddle speed can only be 2, 5 or 10
         
@@ -171,7 +193,7 @@
                 canvasSizeIncrease = true;
                 ctx.canvas.width += resizePerTick;
                 ctx.canvas.height += resizePerTick;
-                //draw();
+                // draw();
                 resizeTick += 1;
                 if(resizeTick == resizeAmount) return;
                 setTimeout(resizeCanvas, 10);
@@ -300,23 +322,58 @@
         }
 
         function drawBall(ball) {
-        //Ball 1
-        //Have ball start in a random direction
-        if(initialPos == true) {
+            //Ball 1
+            //Have ball start in a random direction
+            if(initialPos == true) {
 
-            ball.dx = getRandomArbitrary(0, speedRatio) * (Math.round(Math.random()) * 2 - 1);          
-            ball.dy = Math.sqrt(speedRatio*speedRatio - ball.dx*ball.dx) * (Math.round(Math.random()) * 2 - 1);
-            ball.x = canvas.height/2;
-            ball.y = canvas.height/2;
+                ball.dx = getRandomArbitrary(0, speedRatio) * (Math.round(Math.random()) * 2 - 1);          
+                ball.dy = Math.sqrt(speedRatio*speedRatio - ball.dx*ball.dx) * (Math.round(Math.random()) * 2 - 1);
+                ball.x = canvas.height/2;
+                ball.y = canvas.height/2;
+            }
+            initialPos = false;
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI*2);
+            ctx.fillStyle = ball.colour;
+            ctx.fill();
+            ctx.closePath();
+            document.getElementById("ballX").innerHTML = ball.x;
+            document.getElementById("ballY").innerHTML = ball.y;
         }
-        initialPos = false;
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = ball.colour;
-        ctx.fill();
-        ctx.closePath();
-        document.getElementById("ballX").innerHTML = ball.x;
-        document.getElementById("ballY").innerHTML = ball.y;
+
+        function drawPowerup(powerup) {
+            if(powerup.active == false) {
+                //Set coords
+                powerup.x = getRandomArbitrary(2*borderWidth, canvas.height - 2*borderWidth);
+                powerup.y = getRandomArbitrary(2*borderWidth, canvas.height - 2*borderWidth);
+
+                powerup.active = true;
+                
+            }
+            
+            var randomColor;
+            if(powerup.colourCounter == 10) {
+                randomColor = Math.floor(Math.random()*16777215).toString(16);
+                powerup.colour = "#" + randomColor;
+                powerup.colourCounter = 0;
+            }
+            ctx.fillStyle = powerup.colour;
+            ctx.fillRect(powerup.x - powerup.size/2, powerup.y - powerup.size/2, powerup.size, powerup.size);   
+            powerup.colourCounter++;      
+
+            ctx.beginPath();
+            ctx.rect(powerup.x - powerup.size/2, powerup.y - powerup.size/2, powerup.size, powerup.size);
+            ctx.fillStyle = "#000000";
+            ctx.stroke();
+            ctx.closePath();
+
+            var size = powerup.size + 5;
+            var font = size + "px serif";
+            ctx.font = font;
+            //alert(font);
+            ctx.textAlign = "center";
+            ctx.fillText('?', powerup.x, powerup.y - powerup.size/2 + powerup.size - 3);
+            
         }
 
         function drawLives() {
@@ -516,6 +573,11 @@
 
             
             drawLives();
+            drawPowerup(powerup1);
+            drawPowerup(powerup2);
+
+            powerupCollision(ball1, powerup1);
+            powerupCollision(ball1, powerup2);
 
 
             drawBorder();
@@ -580,6 +642,22 @@
 
         //////////////////////////////// Collision Functions ///////////////////////////////////////////
 
+        function powerupCollision(ball, powerup) {
+            //alert('here');
+            
+            if(ball.x + ball.dx > powerup.x - ballRadius
+            && ball.x + ball.dx < powerup.x + powerup.size + ballRadius
+            && ball.y + ball.dy > powerup.y - ballRadius
+            && ball.y + ball.dy < powerup.y + powerup.size + ballRadius) {
+                var player = ball.owner;
+                document.getElementById("status").innerHTML = player;
+                //alert('player :' + player);
+                powerup.active = false;
+                drawPowerup(powerup);
+                ball.owner = 'none';
+            }
+        }
+
 
         function bottomCollision(ball) {
             if(ball.y + ball.dy > canvas.height-borderWidth-ballRadius-paddleHeight) { 
@@ -594,7 +672,7 @@
                 && ball.x + ball.dx < bottomPaddleX + paddleWidth + ballRadius
                 && ball.y + ball.dy < canvas.height - borderWidth + ballRadius)
                 {
-                    
+                    ball.owner = 'bottom';
                     //Check if it rebounds on top
                     if(ball.x + ball.dx > bottomPaddleX - (ballRadius/2) 
                         && ball.x + ball.dx < bottomPaddleX + paddleWidth + (ballRadius/2) 
@@ -687,7 +765,7 @@
                 && ball.y + ball.dy < rightPaddleY + paddleWidth + ballRadius
                 && ball.x + ball.dx < canvas.height - borderWidth + ballRadius)
                 {
-                    
+                    ball.owner = 'right';
                     //Check if it rebounds left side
                     if(ball.y + ball.dy > rightPaddleY - (ballRadius/2) 
                         && ball.y + ball.dy < rightPaddleY + paddleWidth + (ballRadius/2) 
@@ -780,7 +858,7 @@
                 && ball.y + ball.dy < leftPaddleY + paddleWidth + ballRadius
                 && ball.x + ball.dx > borderWidth - ballRadius) 
                 { 
-                     
+                    ball.owner = 'left';
                     //Check if it rebounds on right side
                     if(ball.y + ball.dy > leftPaddleY - (ballRadius/2)
                     && ball.y + ball.dy < leftPaddleY + paddleWidth + (ballRadius/2)
@@ -875,7 +953,7 @@
                 && ball.x + ball.dx < topPaddleX + paddleWidth + ballRadius
                 && ball.y + ball.dy > borderWidth - ballRadius) 
                 { 
-                     
+                    ball.owner = 'top';
                     //Check if it rebounds on bottom
                     if(ball.x + ball.dx > topPaddleX - (ballRadius/2)
                     && ball.x + ball.dx < topPaddleX + paddleWidth + (ballRadius/2)
