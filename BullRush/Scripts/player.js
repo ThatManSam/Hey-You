@@ -11,14 +11,12 @@ class player {
     moveUp = false;
     moveDown = false;
     colour = color(64,224,208); //turquoise //Red = (255,0,0)
-    number;
 
-    constructor(newX, newY, newType = 0, newSocket, newNumebr){
+    constructor(newX, newY, newType, newSocket, ){
         x = newX;
         y = newY;
-        type = newType;
+        this.typeChange(newType);
         socket = newSocket;
-        number = newNumebr; // Player number in array
 
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
@@ -76,11 +74,7 @@ class player {
         ctx.closePath();
     }
 
-    move(newType, ctx){
-        if (newType != type){
-            this.typeChange(newType);
-        }
-
+    move(ctx){
         if (this.moveLeft && x >= 0 + this.dx){
             this.x -= this.dx;
         }
@@ -97,6 +91,26 @@ class player {
     }
 
     typeChange(newType){
+        // Set any and all type properties in here
+        this.type = newType;
 
+        switch (this.type) {
+            case 0:
+                this.color = color(64,224,208); //turquoise 
+                this.dx = 2;
+                this.dx = 2;
+                this.radius = 5;
+                break;
+        
+            case 1:
+                this.color = color(255,0,0); //Red
+                this.dx = 3;
+                this.dx = 3;
+                this.radius = 5;
+                break;
+
+            default:
+                break;
+        }
     }
 }
