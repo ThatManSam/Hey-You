@@ -6,7 +6,7 @@
     <style>
         * { padding: 0; margin: 0; }
         canvas {
-            background: rgb(201, 201, 201); 
+            background: rgba(255, 255, 255, 0.234); 
             display: block; 
             margin: auto; 
             position: absolute;
@@ -17,74 +17,110 @@
         }
         div {
             background-color: #8a995a;
-            background-image: url("https://www.transparenttextures.com/patterns/diagmonds.png");
+            background-image: url("https://www.transparenttextures.com/patterns/white-diamond-dark.png ");
+            /* 
+            https://www.transparenttextures.com/patterns/diagmonds.png
+            https://www.transparenttextures.com/patterns/white-diamond-dark.png 
+            */
+
         }
         body {
             background-color: #8a995a;
-            background-image: url("https://www.transparenttextures.com/patterns/diagmonds.png");
+            background-image: url("https://www.transparenttextures.com/patterns/white-diamond-dark.png ");
         }
-        .overlay{
-            opacity:0.8;
-            background-color:rgb(169, 39, 39);
-            position:fixed;
-            width:100%;
-            height:100%;
-            top:0px;
-            left:0px;
-            z-index:1000;
-        }
+
        
     </style>
 </head>
 <body>
     <div style = "text-align:center;">
         <canvas id="myCanvas" ></canvas>
-        <p>Bottom paddle: arrow keys</p>
-        <p>Top paddle: A/D</p>
-        <p>Left paddle: O/L</p>
-        <p>Right paddle: -/+</p>
-        <p>All paddles: mouse</p>
-        Toggle random rebounds: <input type="checkbox" id="myCheck" onclick="checkRandomAngle()">
-        Toggle resize: <button onclick="toggleRandomResize()">Resize</button> or spacebar
+        <p>Bottom paddle: arrow keys. Top paddle: A/D. Left paddle: O/L</p>
+        <p>Right paddle: -/+.</p>
+        Toggle resize: <button onclick="toggleRandomResize()">Resize</button> or spacebar.
+        Toggle realtive rebounds: <input type="checkbox" id="myCheckRelative" onclick="checkRealtiveRebounds()">
+        <p >Bottom xPos: <span id="xPosBottom"></span>, Top xPos: <span id="xPosTop"></span></p>
+        <p >Left yPos: <span id="yPosLeft"></span>, Right yPos: <span id="yPosRight"></span></p>
+        <p >Canvas Width: <span id="canvasWidth"></span>, Border Width: <span id="borderWidth"></span></p>
+        <p >Ball Pos (x,y): <span id="ballX"></span> <span id="ballY"></span></p>
+        <p>Ball velocity (dx,dy): <span id="ballDx"></span> <span id="ballDy"></span></p>
+        <p >Status: <span id="status"></span></p>
         
     </div>
-    
+
+    <audio controls autoplay hidden>
+        <source src="Retro_Arcade.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+      <https://patrickdearteaga.com/arcade-music/>
+      <https://www.dl-sounds.com/royalty-free/category/game-film/video-game/?_sfm_bpm=0+220/>
+      </audio>
 
     <script>
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
-        ctx.canvas.height = window.innerHeight*2/3;
-        ctx.canvas.width = window.innerHeight*2/3;
+        ctx.canvas.height = Math.round(Math.round((window.innerHeight*2/3))/10)*10;
+        ctx.canvas.width = Math.round(Math.round((window.innerHeight*2/3))/10)*10;
+
+        //Global ball attributes
+        var ballSpeed = 2;
         var ballRadius = 10;
-        var x = canvas.width/2;
-        var y = canvas.height-30;
-        var ballSpeed = 5;
-        var paddleSpeed = 15;
+        var paddleSpeed = 10;   //Note: paddle speed can only be 2, 5 or 10
         var speedRatio = Math.sqrt((ballSpeed*ballSpeed) + (ballSpeed*ballSpeed));
-        var dx = ballSpeed;
-        var dy = -ballSpeed;
+
+        // Colours
+        // https://www.reddit.com/r/coolguides/comments/njqt0x/color_combinations_that_go_well_with_each_other/
+
+        //Ball 1
+        var x1 = canvas.width*4/5;
+        var y1 = canvas.height/2;
+        var dx1 = -ballSpeed;
+        var dy1 = ballSpeed;       
+        var ballColour = "#000000";
+
+        var ball1 = {
+            x: canvas.width*4/5,
+            y: canvas.height/2,
+            dx: -ballSpeed,
+            dy: ballSpeed,
+            colour: "#000000"
+        };
+
+        //Ball 2
+        var x2 = canvas.width*4/5;
+        var y2 = canvas.height/2;
+        var dx2 = -ballSpeed;
+        var dy2 = ballSpeed;
+        var ballColour = "#000000";
+
+        
+        
         var rand;
         var randAngleToggle = false;
+        var relativeAngleReboundToggle = false;
         var randResizeToggle = false;
         var resizeAmount = 200;
         var resizeTick = resizeAmount;
         var resizePerTick = 1;
         var canvasSizeIncrease = false;
         var paddleHeight = 10;
-        var paddleWidth = 75;
+        var paddleWidth = 70;   //Note: must be multiple of 10
+        var borderWidth = Math.round(Math.round(0.1 * canvas.width)/10)*10; //Round to whole number and round to nearest 10
+
+        //Note: paddle speed can only be 2, 5 or 10
         
         //player paddle positions
-        var bottomPaddleX = (canvas.width-paddleWidth)/2;
-        var bottomPaddleY = (canvas.height-paddleWidth)/2;
+        var bottomPaddleX = Math.round(Math.round(((canvas.width/2)-(paddleWidth/2)))/10)*10;
+        var bottomPaddleY = ((canvas.height-paddleWidth)/2);
 
-        var topPaddleX = (canvas.width-paddleWidth)/2;
+        var topPaddleX = Math.round(Math.round(((canvas.width/2)-(paddleWidth/2)))/10)*10;
         var topPaddleY = (canvas.height-paddleWidth)/2;
 
         var leftPaddleX = (canvas.width-paddleWidth)/2;
-        var leftPaddleY = (canvas.height-paddleWidth)/2;
+        var leftPaddleY = Math.round(Math.round(((canvas.height-paddleWidth)/2))/10)*10;
 
         var rightPaddleX = (canvas.width-paddleWidth)/2;
-        var rightPaddleY = (canvas.height-paddleWidth)/2;
+        var rightPaddleY = Math.round(Math.round(((canvas.height-paddleWidth)/2))/10)*10;
+
         //player button statuses
         var bottomPlayerRightPress = false;
         var bottomPlayerLeftPress = false;
@@ -98,10 +134,22 @@
         var rightPlayerUpPress = false;
         var rightPlayerDownPress = false;
 
-        function checkRandomAngle() {
-            var checkBox = document.getElementById("myCheck");
-            randAngleToggle = checkBox.checked;
-            //alert(randAngleToggle);
+        // player lives
+        var p1 = 2;     //top
+        var p2 = 2;     //left
+        var p3 = 2;     //right
+        var p4 = 2;     //bottom
+
+        // Player colours
+        var p1Colour = "#FC1212";
+        var p2Colour = "#3CC01B";
+        var p3Colour = "#C072CC";
+        var p4Colour = "#0095DD";
+
+        function checkRealtiveRebounds() {
+            //toggle checkbox
+            var checkBoxRealtive = document.getElementById("myCheckRelative");
+            relativeAngleReboundToggle = checkBoxRealtive.checked;
         }
 
         function toggleRandomResize() {
@@ -218,62 +266,215 @@
                 randResizeToggle = false;
             }
         }
+        
 
         function mouseMoveHandler(e) {
-        var relativeX = e.clientX - canvas.offsetLeft;
-        var relativeY = e.clientY - canvas.offsetTop;
-        if(relativeX > 0 && relativeX < canvas.width) {
-            bottomPaddleX = relativeX - paddleWidth/2;
-            topPaddleX = relativeX - paddleWidth/2;
-            leftPaddleY = relativeY - paddleWidth/2
-            rightPaddleY = relativeY - paddleWidth/2
+            var relativeX = e.clientX - canvas.offsetLeft;
+            var relativeY = e.clientY - canvas.offsetTop;
+            if(relativeX > 0 && relativeX < canvas.width) {
+                //document.getElementById("xPosMouse").innerHTML = relativeX;
+                bottomPaddleX = Math.round(Math.round(relativeX - paddleWidth/2)/10)*10;
+                topPaddleX = Math.round(Math.round(relativeX - paddleWidth/2)/10)*10;
+                
+                
 
-        }
-        if(relativeY > 0 && relativeY < canvas.height) {
-            bottomPaddleY = relativeY - paddleWidth/2;
-            topPaddleY = relativeY - paddleWidth/2;
-        }
+            }
+            if(relativeY > 0 && relativeY < canvas.height) {
+                //document.getElementById("yPosMouse").innerHTML = relativeY;
+                leftPaddleY = Math.round(Math.round(relativeY - paddleWidth/2)/10)*10;
+                rightPaddleY = Math.round(Math.round(relativeY - paddleWidth/2)/10)*10;
+            }
         }
         
+        function drawBorder() {
+            ctx.beginPath();
+            ctx.rect(borderWidth, borderWidth, canvas.width - 2*borderWidth, canvas.height - 2*borderWidth);
+            ctx.fillStyle = "#000000";
+            ctx.stroke();
+            ctx.closePath();
+        }
 
-
-        function drawBall() {
+        function drawBall(ball) {
+        //Ball 1
         ctx.beginPath();
-        ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = "#000000";
+        ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI*2);
+        ctx.fillStyle = ball.colour;
         ctx.fill();
         ctx.closePath();
+        document.getElementById("ballX").innerHTML = ball.x;
+        document.getElementById("ballY").innerHTML = ball.y;
         }
+
+        function drawLives() {
+            var height = borderWidth/3;
+            var gap = height/2;
+
+            //Top
+            if(p1 > 1) {
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 - height, height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p1Colour;
+                ctx.fill();
+                ctx.closePath();
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 + height, height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p1Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            else if(p1 > 0) {
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 - height/2, height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p1Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            //Left
+            if(p2 > 1) {
+                ctx.beginPath();
+                ctx.arc(height, canvas.height/2 - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p2Colour;
+                ctx.fill();
+                ctx.closePath();
+                ctx.beginPath();
+                ctx.arc(height, canvas.height/2 + height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p2Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            else if(p2 > 0) {
+                ctx.beginPath();
+                ctx.arc(height, canvas.height/2 - height/2, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p2Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            //Right
+            if(p3 > 1) {
+                ctx.beginPath();
+                ctx.arc(canvas.width - height, canvas.height/2 - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p3Colour;
+                ctx.fill();
+                ctx.closePath();
+                ctx.beginPath();
+                ctx.arc(canvas.width - height, canvas.height/2 + height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p3Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            else if(p3 > 0) {
+                ctx.beginPath();
+                ctx.arc(canvas.width - height, canvas.height/2 - height/2, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p3Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            //Bottom
+            if(p4 > 1) {
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 - height, canvas.height - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p4Colour;
+                ctx.fill();
+                ctx.closePath();
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 + height, canvas.height - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle =p4Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            else if(p4 > 0) {
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 - height/2 , canvas.height - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = p4Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+
+
+
+        function changeColour(ball) {
+            if( ball.colour ==  "#000000") {
+                ball.colour = "#FFFFFF";
+            }
+            else{
+                ball.colour = "#000000";
+            }
+        }
+
         function drawPaddle() {
-        //bottom
-        ctx.beginPath();
-        ctx.rect(bottomPaddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-        ctx.fillStyle = "#0095DD";
-        ctx.fill();
-        ctx.closePath();
+            //bottom
+            if(p4 > 0) {
+                ctx.beginPath();
+                ctx.rect(bottomPaddleX, canvas.height-borderWidth-paddleHeight, paddleWidth, paddleHeight);
+                ctx.fillStyle = p4Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            else {
+                ctx.beginPath();
+                ctx.rect(borderWidth + paddleHeight, canvas.height-borderWidth-paddleHeight, canvas.width - 2*borderWidth - 2*paddleHeight, paddleHeight);
+                ctx.fillStyle = p4Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            
 
-        //top
-        ctx.beginPath();
-        ctx.rect(topPaddleX, 0, paddleWidth, paddleHeight);
-        ctx.fillStyle = "#D8715B";
-        ctx.fill();
-        ctx.closePath();
+            //top
+            if(p1 > 0) {
+                ctx.beginPath();
+                ctx.rect(topPaddleX, borderWidth, paddleWidth, paddleHeight);
+                ctx.fillStyle = p1Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            else {
+                ctx.beginPath();
+                ctx.rect(borderWidth + paddleHeight, borderWidth, canvas.width - 2*borderWidth - 2*paddleHeight, paddleHeight);
+                ctx.fillStyle = p1Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            
 
-        //left
-        ctx.beginPath();
-        ctx.rect(0, leftPaddleY, paddleHeight, paddleWidth);
-        ctx.fillStyle = "#79CC72";
-        ctx.fill();
-        ctx.closePath();
-        
+            //left
+            if(p2 > 0) {
+                ctx.beginPath();
+                ctx.rect(borderWidth, leftPaddleY, paddleHeight, paddleWidth);
+                ctx.fillStyle = p2Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            else {
+                ctx.beginPath();
+                ctx.rect(borderWidth, borderWidth + paddleHeight, paddleHeight, canvas.height - 2*borderWidth - 2*paddleHeight);
+                ctx.fillStyle = p2Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            
+            
 
-        //right
-        ctx.beginPath();
-        ctx.rect(canvas.width - paddleHeight, rightPaddleY, paddleHeight, paddleWidth);
-        ctx.fillStyle = "#C072CC";
-        ctx.fill();
-        ctx.closePath();
+            //right
+            if(p3 > 0) {
+                ctx.beginPath();
+                ctx.rect(canvas.width - paddleHeight - borderWidth, rightPaddleY, paddleHeight, paddleWidth);
+                ctx.fillStyle = p3Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
+            else {
+                ctx.beginPath();
+                ctx.rect(canvas.width - paddleHeight - borderWidth, borderWidth + paddleHeight, paddleHeight, canvas.height - 2*borderWidth - 2*paddleHeight);
+                ctx.fillStyle = p3Colour;
+                ctx.fill();
+                ctx.closePath();
+            }
         }
+        
 
         function draw() {
             //ctx.canvas.height = window.innerHeight*2/3;
@@ -285,166 +486,450 @@
                 randResizeToggle = false;
             }
 
-            //drawBricks();
-            drawBall();
+            //Show positions
+            document.getElementById("xPosBottom").innerHTML = bottomPaddleX;
+            document.getElementById("xPosBottom").innerHTML = bottomPaddleX;
+            document.getElementById("xPosTop").innerHTML = topPaddleX;
+            document.getElementById("xPosTop").innerHTML = topPaddleX;
+            document.getElementById("yPosLeft").innerHTML = leftPaddleY;
+            document.getElementById("yPosLeft").innerHTML = leftPaddleY;
+            document.getElementById("yPosRight").innerHTML = rightPaddleY;
+            document.getElementById("yPosRight").innerHTML = rightPaddleY;
+            document.getElementById("canvasWidth").innerHTML = canvas.width;
+            document.getElementById("borderWidth").innerHTML = borderWidth;
+            document.getElementById("ballDx").innerHTML = ball1.dx;
+            document.getElementById("ballDy").innerHTML = ball1.dy;
+
+            
+            drawLives();
+
+
+            drawBorder();
+            drawBall(ball1);
             drawPaddle();
 
-            //Left check
-            if(x + dx > canvas.width-ballRadius) {
-                dx = -dx;
-            }
-            //right check
-            else if(x + dx < ballRadius) {
-                dx = -dx;
-            }
-            //Top check
-            if(y + dy < ballRadius) {
-                if(x > topPaddleX && x < topPaddleX + paddleWidth) {
-                    if(randAngleToggle == true){                       
-                        //Random to decide what angle ball bounces at
-                        rand = Math.floor(Math.random() * 2);                   
-                
-                        if(dx > 0) { //Ball going right, change right velocity
-                            dx = ballSpeed;
-                            dy = ballSpeed;
-                            //Add randomness
-                            if(rand == 1) { //Change dy, increase
-                                dy += 1;
-                                //Maintain speed
-                                dx = Math.sqrt(dy + speedRatio);
-                            }
-                            else { //Change dx, increase
-                                dx += 1;
-                                dy = Math.sqrt(dx + speedRatio);
-                            }
-                            //dy += randY;
-                            //dx += randX;
-                        }
-                        else { //Ball going left, change left velocity
-                            dx = -ballSpeed;
-                            dy = ballSpeed;
-                            //Add randomness
-                            if(rand == 1) { //Change dy, increase
-                                dy += 1;
-                                //Maintain speed
-                                dx = -Math.sqrt(Math.abs(dy) + speedRatio);
-                            }
-                            else { //Change dx, increase
-                                dx -= 1;
-                                dy = Math.sqrt(Math.abs(dx) + speedRatio);
-                            }
-                            //dy += randY;
-                            //dx += randX;
-                        }
-                    }
-                    else {
-                        dy = -dy;
-                    }
-                }
-                //Player missed
-                else {
-                    x = canvas.width/2;
-                    y = canvas.height/4;
-                    dx = ballSpeed;
-                    dy = ballSpeed;
-                    bottomPaddleX = (canvas.width-paddleWidth)/2; ///////////// reset all paddles ////////////
-                }
-            }
+            // Paddle collision checks           
             //Bottom check
-            else if(y + dy > canvas.height-ballRadius) {
-                if(x > bottomPaddleX && x < bottomPaddleX + paddleWidth) {
-                    if(randAngleToggle == true) {
-                        //Random to decide what angle ball bounces at
-                        rand = Math.floor(Math.random() * 2); //0 or 1
+            bottomCollision(ball1);
 
-                        if(dx > 0) { //Ball going right, change right velocity
-                            dx = ballSpeed;
-                            dy = -ballSpeed;
-                            //Add randomness
-                            if(rand == 1) { //Change dy, increase
-                                dy -= 1;
-                                //Maintain speed
-                                dx = Math.sqrt(Math.abs(dy) + speedRatio);
-                            }
-                            else { //Change dx, increase
-                                dx += 1;
-                                dy = -Math.sqrt(dx + speedRatio);
-                            }
-                            //dy += randY;
-                            //dx += randX;
-                        }
-                        else { //Ball going left, change left velocity
-                            dx = -ballSpeed;
-                            dy = -ballSpeed;
-                            //Add randomness
-                            if(rand == 1) { //Change dy, increase
-                                dy -= 1;
-                                //Maintain speed
-                                dx = -Math.sqrt(Math.abs(dy) + speedRatio);
-                            }
-                            else { //Change dx, increase
-                                dx -= 1;
-                                dy = -Math.sqrt(Math.abs(dx) + speedRatio);
-                            }
-                            //dy += randY;
-                            //dx += randX;
-                        }
-                    }
-                    else {
-                        dy = -dy;
-                    }
+            //Left check
+            leftCollision(ball1);
 
-                }
-                //Player missed
-                else {
-                    x = canvas.width/2;
-                    y = canvas.height*3/4;
-                    dx = ballSpeed;
-                    dy = -ballSpeed;
-                    bottomPaddleX = (canvas.width-paddleWidth)/2;
-                }
-            }
+            //Top check
+            topCollision(ball1);
+
+            //Right  check
+            rightCollision(ball1);
 
             //Move paddles
             //Bottom player
-            if(bottomPlayerRightPress && bottomPaddleX < canvas.width-paddleWidth) {
+            if(bottomPlayerRightPress && bottomPaddleX < canvas.width-paddleWidth-borderWidth-paddleHeight) {
                 bottomPaddleX += paddleSpeed;
             }
-            else if(bottomPlayerLeftPress && bottomPaddleX > 0) {
+            else if(bottomPlayerLeftPress && bottomPaddleX > borderWidth + paddleHeight) {
                 bottomPaddleX -= paddleSpeed;
+                
             }
 
             //Top player
-            if(topPlayerRightPress && topPaddleX < canvas.width-paddleWidth) {
+            if(topPlayerRightPress && topPaddleX < canvas.width-paddleWidth-borderWidth-paddleHeight) {
                 topPaddleX += paddleSpeed;
             }
-            else if(topPlayerLeftPress && topPaddleX > 0) {
+            else if(topPlayerLeftPress && topPaddleX > borderWidth + paddleHeight) {               
                 topPaddleX -= paddleSpeed;
             }
 
             //Left player
-            if(leftPlayerUpPress && leftPaddleY > 0) {  
+            if(leftPlayerUpPress && leftPaddleY > borderWidth + paddleHeight) {  
                 leftPaddleY -= paddleSpeed;
             }
-            else if(leftPlayerDownPress && leftPaddleY < canvas.height-paddleWidth) {
+            else if(leftPlayerDownPress && leftPaddleY < canvas.height-paddleWidth-borderWidth-paddleHeight) {
                 leftPaddleY += paddleSpeed;
             }
 
             //Right player
-            if(rightPlayerUpPress && rightPaddleY > 0) {
+            if(rightPlayerUpPress && rightPaddleY > borderWidth + paddleHeight) {
                 rightPaddleY -= paddleSpeed;
             }
-            else if(rightPlayerDownPress && rightPaddleY < canvas.height-paddleWidth) {
+            else if(rightPlayerDownPress && rightPaddleY < canvas.height-paddleWidth-borderWidth-paddleHeight) {
                 rightPaddleY += paddleSpeed;
             }
 
-            //Move ball
-            x += dx;
-            y += dy;
+            //Move ball1
+            ball1.x += ball1.dx;
+            ball1.y += ball1.dy;
             requestAnimationFrame(draw);
         }
 
         draw();
+
+
+        //////////////////////////////// Collision Functions ///////////////////////////////////////////
+
+
+        function bottomCollision(ball) {
+            if(ball.y + ball.dy > canvas.height-borderWidth-ballRadius-paddleHeight) { 
+                if(p4 == 0) {
+                    ball.dy = -ball.dy;
+                    document.getElementById("status").innerHTML = "Bottom Paddle: Wall";
+                    changeColour(ball); 
+                }
+
+                //Check if ball has collided with paddle
+                if(ball.x + ball.dx > bottomPaddleX - ballRadius
+                && ball.x + ball.dx < bottomPaddleX + paddleWidth + ballRadius
+                && ball.y + ball.dy < canvas.height - borderWidth + ballRadius)
+                {
+                    
+                    //Check if it rebounds on top
+                    if(ball.x + ball.dx > bottomPaddleX - (ballRadius/2) 
+                        && ball.x + ball.dx < bottomPaddleX + paddleWidth + (ballRadius/2) 
+                        && ball.y + ball.dy < canvas.height -borderWidth -paddleHeight) {
+                        //Ball direction should only change once
+                        if(Math.sign(ball.dy) == 1)
+                        {
+                            if(relativeAngleReboundToggle == true) {
+                                if(ball.x < bottomPaddleX + paddleWidth/2) {    //Left side of paddle
+                                    var angleMultiplier = (ball.x - (bottomPaddleX - ballRadius/2))/(paddleWidth/2 + ballRadius/2);
+                                    var angle = angleMultiplier * (Math.PI/2);
+                                    document.getElementById("status").innerHTML = angleMultiplier;
+                                    ball.dy = -(speedRatio * Math.sin(angle));
+                                    var sign = Math.sign(ball.dx);
+                                    if(sign == 0) sign = -1; 
+                                    ball.dx = sign * (speedRatio * Math.cos(angle));
+                                }
+                                else if (ball.x > bottomPaddleX + paddleWidth/2) {  //Right side of paddle
+                                    var angleMultiplier = 1-(ball.x - (bottomPaddleX + paddleWidth/2))/(paddleWidth/2 + ballRadius/2);
+                                    var angle = angleMultiplier * (Math.PI/2);
+                                    document.getElementById("status").innerHTML = angleMultiplier;
+                                    ball.dy = Math.round(-(speedRatio * Math.sin(angle)));
+                                    var sign = Math.sign(ball.dx);
+                                    if(sign == 0) sign = 1;
+                                    ball.dx = Math.round(sign * (speedRatio * Math.cos(angle)));
+                                }
+                                else {  //Unlikely occurance of it being perfectly in the middle
+                                    ball.dy = -speedRatio
+                                    ball.dx = 0;
+                                }
+                            }
+                            else {
+                                ball.dy = -ball.dy;
+                                document.getElementById("status").innerHTML = "Bottom Paddle: Top";
+                                changeColour(ball);
+                            }
+                            
+                        }
+                    }
+                    else{
+                        //Left side
+                        if(ball.x + ball.dx > bottomPaddleX - ballRadius && ball.x + ball.dx < bottomPaddleX) {
+                            document.getElementById("status").innerHTML = "Bottom Paddle: Left";
+                            if(Math.sign(ball.dx) == 1) {
+                                ball.dx = -ball.dx;
+                                changeColour(ball);
+                            }                            
+                        }
+                        //Right side
+                        else if(ball.x + ball.dx < bottomPaddleX + paddleWidth + ballRadius && ball.x + ball.dx > bottomPaddleX + paddleWidth) {
+                            document.getElementById("status").innerHTML = "Bottom Paddle: Right";
+                            if(Math.sign(ball.dx) == -1) {
+                                ball.dx = -ball.dx;
+                                changeColour(ball);
+                            } 
+                        }
+                    }
+                    
+                    
+                }
+                //Otherwise player missed
+                else{
+                    if(ball.y > canvas.height) {
+                        //Take off a life
+                        p4--;
+
+                        ball.x = canvas.width/2;
+                        ball.y = canvas.height*4/5;
+                        ball.dx = 0;
+                        ball.dy = -speedRatio;
+                    //bottomPaddleX = (canvas.width-paddleWidth)/2;
+                    }
+                }
+            }
+        }        
+
+        function rightCollision(ball) {
+            if(ball.x + ball.dx > canvas.height-borderWidth-ballRadius-paddleHeight) { 
+                if(p3 == 0) {
+                    ball.dx = -ball.dx;
+                    document.getElementById("status").innerHTML = "Right Paddle: Wall";
+                    changeColour(ball);
+                }
+
+                //Check if ball has collided with paddle
+                if(ball.y + ball.dy > rightPaddleY - ballRadius
+                && ball.y + ball.dy < rightPaddleY + paddleWidth + ballRadius
+                && ball.x + ball.dx < canvas.height - borderWidth + ballRadius)
+                {
+                    
+                    //Check if it rebounds left side
+                    if(ball.y + ball.dy > rightPaddleY - (ballRadius/2) 
+                        && ball.y + ball.dy < rightPaddleY + paddleWidth + (ballRadius/2) 
+                        && ball.x + ball.dx < canvas.height -borderWidth -paddleHeight) {
+                        //Ball direction should only change once
+                        if(Math.sign(ball.dx) == 1)
+                        {
+                            if(relativeAngleReboundToggle == true) {
+                                if(ball.y < rightPaddleY + paddleWidth/2) {     //Top half of paddle
+                                    var angleMultiplier = (ball.y - (rightPaddleY - ballRadius/2)) / (paddleWidth/2 + ballRadius/2);
+                                    var angle = angleMultiplier * (Math.PI/2);
+                                    document.getElementById("status").innerHTML = angleMultiplier;
+                                    ball.dx = -(speedRatio * Math.sin(angle));
+                                    var sign = Math.sign(ball.dy);
+                                    if(sign == 0) sign = -1;
+                                    ball.dy = sign * (speedRatio * Math.cos(angle));
+                                }
+                                else if(ball.y > rightPaddleY + paddleWidth/2) {   //Bottom half of paddle
+                                    var angleMultiplier = 1-((ball.y - (rightPaddleY + paddleWidth/2)) / (paddleWidth/2 + ballRadius/2));
+                                    var angle = angleMultiplier * (Math.PI/2);
+                                    document.getElementById("status").innerHTML = angleMultiplier;
+                                    ball.dx = -(speedRatio * Math.sin(angle));
+                                    var sign = Math.sign(ball.dy);
+                                    if(sign == 0) sign = 1;
+                                    ball.dy = sign * (speedRatio * Math.cos(angle));
+                                }
+                                else {
+                                    ball.dy = 0;
+                                    ball.dx = -speedRatio;
+                                }
+                            }
+                            else {
+                                ball.dx = -ball.dx;
+                                document.getElementById("status").innerHTML = "Right Paddle: Side";
+                                changeColour(ball);
+                            }
+                            
+                        }
+                    }
+                    else{
+                        //Top side
+                        if(ball.y + ball.dy > rightPaddleY - ballRadius && ball.y + ball.dy < rightPaddleY) {
+                            document.getElementById("status").innerHTML = "Right Paddle: Top";
+                            if(Math.sign(ball.dy) == 1) {
+                                ball.dy = -ball.dy;
+                                changeColour(ball);
+                            }                            
+                        }
+                        //Bottom side
+                        else if(ball.y + ball.dy < rightPaddleY + paddleWidth + ballRadius && ball.y + ball.dy > rightPaddleY + paddleWidth) {
+                            document.getElementById("status").innerHTML = "Right Paddle: Bottom";
+                            if(Math.sign(ball.dy) == -1) {
+                                ball.dy = -ball.dy;
+                                changeColour(ball);
+                            } 
+                        }
+                    }
+                    
+                    
+                }
+                //Otherwise player missed
+                else{
+                    if(ball.x > canvas.height) {
+                        //Take off a life
+                        p3--;
+
+                        ball.x = canvas.width/2;
+                        ball.y = canvas.height*4/5;
+                        ball.dx = 0;
+                        ball.dy = -speedRatio;
+                    //bottomPaddleX = (canvas.width-paddleWidth)/2;
+                    }
+                }
+            }
+        } 
+        
+        function leftCollision(ball) {
+            if(ball.x + ball.dx < borderWidth + paddleHeight + ballRadius) {    
+                if(p2 == 0) {
+                    ball.dx = -ball.dx;
+                    changeColour(ball);
+                    document.getElementById("status").innerHTML = "Left Paddle: Wall";
+                }           
+
+                //Check if ball has collided with paddle
+                if(ball.y + ball.dy > leftPaddleY - ballRadius
+                && ball.y + ball.dy < leftPaddleY + paddleWidth + ballRadius
+                && ball.x + ball.dx > borderWidth - ballRadius) 
+                { 
+                     
+                    //Check if it rebounds on right side
+                    if(ball.y + ball.dy > leftPaddleY - (ballRadius/2)
+                    && ball.y + ball.dy < leftPaddleY + paddleWidth + (ballRadius/2)
+                    && ball.x + ball.dx > borderWidth + paddleHeight)
+                    {
+                        if(Math.sign(ball.dx) == -1)
+                        {
+                            if(relativeAngleReboundToggle == true) {
+                                if(ball.y < leftPaddleY + paddleWidth/2) {      //Top half of paddle
+                                    var angleMultiplier = (ball.y - (leftPaddleY - ballRadius/2)) / (paddleWidth/2 + ballRadius/2);
+                                    var angle = angleMultiplier * (Math.PI/2);
+                                    document.getElementById("status").innerHTML = angleMultiplier;
+                                    ball.dx = (speedRatio * Math.sin(angle));
+                                    var sign = Math.sign(ball.dy);
+                                    if(sign == 0) sign = -1;
+                                    ball.dy = sign * (speedRatio * Math.cos(angle));
+                                }
+                                else if(ball.y > leftPaddleY + paddleWidth/2) {   //Bottom half of paddle
+                                    var angleMultiplier = 1-((ball.y - (leftPaddleY + paddleWidth/2)) / (paddleWidth/2 + ballRadius/2));
+                                    var angle = angleMultiplier * (Math.PI/2);
+                                    document.getElementById("status").innerHTML = angleMultiplier;
+                                    ball.dx = (speedRatio * Math.sin(angle));
+                                    var sign = Math.sign(ball.dy);
+                                    if(sign == 0) sign = 1;
+                                    ball.dy = sign * (speedRatio * Math.cos(angle));
+                                }
+                                else {
+                                    ball.dy = 0;
+                                    ball.dx = -speedRatio;
+                                }
+                            }
+                            else {
+                                ball.dx = -ball.dx;
+                                changeColour(ball);
+                                document.getElementById("status").innerHTML = "Left Paddle: Side";
+                            }
+                            
+                        }
+                    }
+                    else {
+                        //Top
+                        if(ball.y + ball.dy > leftPaddleY - ballRadius && ball.y + ball.dy < leftPaddleY) {
+                            if(Math.sign(ball.dy) == 1)
+                            {
+                                ball.dy = -ball.dy;
+                                changeColour(ball);
+                                document.getElementById("status").innerHTML = "Left Paddle: Top";
+                            }                            
+                        }
+                        //Bottom
+                        else if(ball.y + ball.dy < leftPaddleY + paddleWidth + ballRadius && ball.y + ball.dy > leftPaddleY + paddleWidth) {
+                            if(Math.sign(ball.dy) == -1)
+                            {
+                                ball.dy = -ball.dy;
+                                changeColour(ball);
+                                document.getElementById("status").innerHTML = "Left Paddle: Bottom";
+                            }
+                        }
+
+                    }
+
+                }
+                // Otherwise player missed
+                else {
+                    if(ball.x < 0) {
+                        //Take off a life
+                        p2--;
+
+                        ball.x = canvas.width/2;
+                        ball.y = canvas.height*4/5;
+                        ball.dx = 0;
+                        ball.dy = -speedRatio;
+                    //bottomPaddleX = (canvas.width-paddleWidth)/2;
+                    }                   
+                }               
+            }
+        }
+
+        function topCollision(ball) {
+            if(ball.y + ball.dy < borderWidth + paddleHeight + ballRadius) {
+                if(p1 == 0) {
+                    ball.dy = -ball.dy;
+                    changeColour(ball);
+                    document.getElementById("status").innerHTML = "Top Paddle: Wall";
+                }
+                
+                //Check if ball has collided with paddle
+                if(ball.x + ball.dx > topPaddleX - ballRadius
+                && ball.x + ball.dx < topPaddleX + paddleWidth + ballRadius
+                && ball.y + ball.dy > borderWidth - ballRadius) 
+                { 
+                     
+                    //Check if it rebounds on bottom
+                    if(ball.x + ball.dx > topPaddleX - (ballRadius/2)
+                    && ball.x + ball.dx < topPaddleX + paddleWidth + (ballRadius/2)
+                    && ball.y + ball.dy > borderWidth + paddleHeight)
+                    {
+                        if(Math.sign(ball.dy) == -1)
+                        {
+                            if(relativeAngleReboundToggle == true) {
+                                if(ball.x < topPaddleX + paddleWidth/2) {    //Left side of paddle
+                                    var angleMultiplier = (ball.x - (topPaddleX - ballRadius/2))/(paddleWidth/2 + ballRadius/2);
+                                    var angle = angleMultiplier * (Math.PI/2);
+                                    document.getElementById("status").innerHTML = angleMultiplier;
+                                    ball.dy = (speedRatio * Math.sin(angle));
+                                    var sign = Math.sign(ball.dx);
+                                    if(sign == 0) sign = -1; 
+                                    ball.dx = sign * (speedRatio * Math.cos(angle));
+                                }
+                                else if (ball.x > topPaddleX + paddleWidth/2) {  //Right side of paddle
+                                    var angleMultiplier = 1-(ball.x - (topPaddleX + paddleWidth/2))/(paddleWidth/2 + ballRadius/2);
+                                    var angle = angleMultiplier * (Math.PI/2);
+                                    document.getElementById("status").innerHTML = angleMultiplier;
+                                    ball.dy = (speedRatio * Math.sin(angle));
+                                    var sign = Math.sign(ball.dx);
+                                    if(sign == 0) sign = 1;
+                                    ball.dx = sign * (speedRatio * Math.cos(angle));
+                                }
+                                else {  //Unlikely occurance of it being perfectly in the middle
+                                    ball.dy = -speedRatio
+                                    ball.dx = 0;
+                                }
+                            }
+                            else {
+                                ball.dy = -ball.dy;
+                                changeColour(ball);
+                                document.getElementById("status").innerHTML = "Top Paddle: Bottom";
+                            }
+                            
+                        }
+                    }
+                    else {
+                        //Top
+                        if(ball.x + ball.dx > topPaddleX - ballRadius && ball.x + ball.dx < topPaddleX) {
+                            if(Math.sign(ball.dx) == 1)
+                            {
+                                ball.dx = -ball.dx;
+                                changeColour(ball);
+                                document.getElementById("status").innerHTML = "Top Paddle: Left";
+                            }                            
+                        }
+                        //Bottom
+                        else if(ball.x + ball.dx < topPaddleX + paddleWidth + ballRadius && ball.x + ball.dx > topPaddleX + paddleWidth) {
+                            if(Math.sign(ball.dx) == -1)
+                            {
+                                ball.dx = -ball.dx;
+                                changeColour(ball);
+                                document.getElementById("status").innerHTML = "Top Paddle: Right";
+                            }
+                        }
+
+                    }
+
+                }
+                // Otherwise player missed
+                else {
+                    if(ball.y < 0) {
+                        //Take off a life
+                        p1--;
+
+                        ball.x = canvas.width/2;
+                        ball.y = canvas.height*4/5;
+                        ball.dx = 0;
+                        ball.dy = -speedRatio;
+                    //bottomPaddleX = (canvas.width-paddleWidth)/2;
+                    }                   
+                }               
+            }
+        }
     </script>
 
 </body>
