@@ -76,6 +76,7 @@
         var dx1 = -ballSpeed;
         var dy1 = ballSpeed;       
         var ballColour = "#000000";
+        var initialPos = true;
 
         var ball1 = {
             x: canvas.width*4/5,
@@ -285,6 +286,10 @@
                 rightPaddleY = Math.round(Math.round(relativeY - paddleWidth/2)/10)*10;
             }
         }
+
+        function getRandomArbitrary(min, max) {
+            return Math.random() * (max - min) + min;
+        }
         
         function drawBorder() {
             ctx.beginPath();
@@ -296,6 +301,15 @@
 
         function drawBall(ball) {
         //Ball 1
+        //Have ball start in a random direction
+        if(initialPos == true) {
+
+            ball.dx = getRandomArbitrary(0, speedRatio) * (Math.round(Math.random()) * 2 - 1);          
+            ball.dy = Math.sqrt(speedRatio*speedRatio - ball.dx*ball.dx) * (Math.round(Math.random()) * 2 - 1);
+            ball.x = canvas.height/2;
+            ball.y = canvas.height/2;
+        }
+        initialPos = false;
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI*2);
         ctx.fillStyle = ball.colour;
@@ -647,6 +661,9 @@
                         //Take off a life
                         p4--;
 
+                        //Reset ball
+                        initialPos = true;
+
                         ball.x = canvas.width/2;
                         ball.y = canvas.height*4/5;
                         ball.dx = 0;
@@ -736,6 +753,9 @@
                     if(ball.x > canvas.height) {
                         //Take off a life
                         p3--;
+
+                        //Reset ball
+                        initialPos = true;
 
                         ball.x = canvas.width/2;
                         ball.y = canvas.height*4/5;
@@ -829,6 +849,9 @@
                         //Take off a life
                         p2--;
 
+                        //Reset ball
+                        initialPos = true;
+
                         ball.x = canvas.width/2;
                         ball.y = canvas.height*4/5;
                         ball.dx = 0;
@@ -920,6 +943,9 @@
                     if(ball.y < 0) {
                         //Take off a life
                         p1--;
+
+                        //Reset ball
+                        initialPos = true;
 
                         ball.x = canvas.width/2;
                         ball.y = canvas.height*4/5;
