@@ -115,6 +115,10 @@ function include(file) {
     
 }
 
+function socketUpdate(){
+    // Logic to check which player needs the update and forward info???
+}
+
 class player {
     socket = null;
     type = 0; // 0 - normal player, 1 - tagger, 2 - waiting for new round
@@ -133,10 +137,6 @@ class player {
         this.x = newX;
         this.y = newY;
         this.socket = newSocket;
-
-        document.addEventListener("keydown", this.keyDownHandler, false);
-        document.addEventListener("keyup", this.keyUpHandler, false);
-
         this.typeChange(newType);
     }
 
@@ -145,37 +145,9 @@ class player {
         return position;
     }
 
-    keyDownHandler(e){
-        switch (e.key) {
-            case "Right","ArrowRight":
-                this.moveRight = true;
-                break;
-            case "Left","ArrowLeft":
-                this.moveLeft = true;
-                break;
-            case "Up","ArrowUp":
-                this.moveUp = true;
-                break;
-            case "Down","ArrowDown":
-                this.moveDown = true;
-                break;
-        }
-    }
-
-    keyUpHandler(e){
-        switch (e.key) {
-            case "Right","ArrowRight":
-                this.moveRight = false;
-                break;
-            case "Left","ArrowLeft":
-                this.moveLeft = false;
-                break;
-            case "Up","ArrowUp":
-                this.moveUp = false;
-                break;
-            case "Down","ArrowDown":
-                this.moveDown = false;
-                break;
+    socketEventHandler(event){
+        switch (e){
+            // Different events caused by socket
         }
     }
 
