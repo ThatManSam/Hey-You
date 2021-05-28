@@ -39,11 +39,8 @@
         <p>Right paddle: -/+.</p>
         Toggle resize: <button onclick="toggleRandomResize()">Resize</button> or spacebar.
         Toggle realtive rebounds: <input type="checkbox" id="myCheckRelative" onclick="checkRealtiveRebounds()">
-        <p >Bottom xPos: <span id="xPosBottom"></span>, Top xPos: <span id="xPosTop"></span></p>
-        <p >Left yPos: <span id="yPosLeft"></span>, Right yPos: <span id="yPosRight"></span></p>
-        <p >Canvas Width: <span id="canvasWidth"></span>, Border Width: <span id="borderWidth"></span></p>
         <p >Ball Pos (x,y): <span id="ballX"></span> <span id="ballY"></span></p>
-        <p>Ball velocity (dx,dy): <span id="ballDx"></span> <span id="ballDy"></span></p>
+        <p>Ball velocity (dx,dy): <span id="ballDx"></span> , <span id="ballDy"></span></p>
         <p >Status: <span id="status"></span></p>
         
     </div>
@@ -62,7 +59,8 @@
         ctx.canvas.width = Math.round(Math.round((window.innerHeight*2/3))/10)*10;
 
         //Global ball attributes
-        var ballSpeed = 2;
+        var ballSpeed = 2;  
+        var defaultBallSpeed = ballSpeed;
         var ballRadius = 10;
         var paddleSpeed = 10;   //Note: paddle speed can only be 2, 5 or 10
         var speedRatio = Math.sqrt((ballSpeed*ballSpeed) + (ballSpeed*ballSpeed));
@@ -75,37 +73,35 @@
         var resizePerTick = 1;
         var canvasSizeIncrease = false;
         var paddleHeight = 10;
-        var paddleWidth = 70;   //Note: must be multiple of 10
+        var paddleWidth = 70;   
+        var defaultPaddleWidth = 70; //Note: must be multiple of 10
         var borderWidth = Math.round(Math.round(0.1 * canvas.width)/10)*10; //Round to whole number and round to nearest 10
 
         // Colours
         // https://www.reddit.com/r/coolguides/comments/njqt0x/color_combinations_that_go_well_with_each_other/
 
-        //Ball 1
-        var x1 = canvas.width*4/5;
-        var y1 = canvas.height/2;
-        var dx1 = -ballSpeed;
-        var dy1 = ballSpeed;       
-        var ballColour = "#000000";
-        var initialPos = true;
-
+        // Balls
         var ball1 = {
             x: canvas.width*4/5,
             y: canvas.height/2,
             dx: -ballSpeed,
             dy: ballSpeed,
             colour: "#000000",
-            owner: 'none'
+            owner: 'none',
+            initialPos: true
         };
 
-        //Ball 2
-        var x2 = canvas.width*4/5;
-        var y2 = canvas.height/2;
-        var dx2 = -ballSpeed;
-        var dy2 = ballSpeed;
-        var ballColour = "#000000";
+        var ball2 = {
+            x: canvas.width*4/5,
+            y: canvas.height/2,
+            dx: -ballSpeed,
+            dy: ballSpeed,
+            colour: "#000000",
+            owner: 'none',
+            initialPos: true
+        };
 
-        //Powerup 1
+        //Powerups
         var powerup1 = {
             x: 10,
             y: 10,
@@ -115,7 +111,6 @@
             colour: "#000000"
         };
 
-        //Powerup 2
         var powerup2 = {
             x: 10,
             y: 10,
@@ -125,49 +120,49 @@
             colour: "#000000"
         };
 
+        // Paddles
+        var topPaddle = {
+            x: Math.round(Math.round(((canvas.width/2)-(defaultPaddleWidth/2)))/10)*10,
+            y: (canvas.height-defaultPaddleWidth)/2,
+            width: defaultPaddleWidth,
+            leftPress: false,
+            rightPress: false,
+            lives: 2,
+            colour: "#FC1212"
+        }
+
+        var leftPaddle = {
+            x: (canvas.width-defaultPaddleWidth)/2,
+            y: Math.round(Math.round(((canvas.height-defaultPaddleWidth)/2))/10)*10,
+            width: defaultPaddleWidth,
+            upPress: false,
+            downPress: false,
+            lives: 2,
+            colour: "#3CC01B"
+        }
+
+        var rightPaddle = {
+            x: (canvas.width-defaultPaddleWidth)/2,
+            y: Math.round(Math.round(((canvas.height-defaultPaddleWidth)/2))/10)*10,
+            width: defaultPaddleWidth,
+            upPress: false,
+            downPress: false,
+            lives: 2,
+            colour: "#C072CC"
+        }
         
+        var bottomPaddle = {
+            x: Math.round(Math.round(((canvas.width/2)-(defaultPaddleWidth/2)))/10)*10,
+            y: ((canvas.height-defaultPaddleWidth)/2),
+            width: defaultPaddleWidth,
+            leftPress: false,
+            rightPress: false,
+            lives: 2,
+            colour: "#0095DD"
+        }
         
-        
 
-        //Note: paddle speed can only be 2, 5 or 10
-        
-        //player paddle positions
-        var bottomPaddleX = Math.round(Math.round(((canvas.width/2)-(paddleWidth/2)))/10)*10;
-        var bottomPaddleY = ((canvas.height-paddleWidth)/2);
-
-        var topPaddleX = Math.round(Math.round(((canvas.width/2)-(paddleWidth/2)))/10)*10;
-        var topPaddleY = (canvas.height-paddleWidth)/2;
-
-        var leftPaddleX = (canvas.width-paddleWidth)/2;
-        var leftPaddleY = Math.round(Math.round(((canvas.height-paddleWidth)/2))/10)*10;
-
-        var rightPaddleX = (canvas.width-paddleWidth)/2;
-        var rightPaddleY = Math.round(Math.round(((canvas.height-paddleWidth)/2))/10)*10;
-
-        //player button statuses
-        var bottomPlayerRightPress = false;
-        var bottomPlayerLeftPress = false;
-
-        var topPlayerLeftPress = false;
-        var topPlayerRightPress = false;
-
-        var leftPlayerUpPress = false;
-        var leftPlayerDownPress = false;
-
-        var rightPlayerUpPress = false;
-        var rightPlayerDownPress = false;
-
-        // player lives
-        var p1 = 2;     //top
-        var p2 = 2;     //left
-        var p3 = 2;     //right
-        var p4 = 2;     //bottom
-
-        // Player colours
-        var p1Colour = "#FC1212";
-        var p2Colour = "#3CC01B";
-        var p3Colour = "#C072CC";
-        var p4Colour = "#0095DD";
+        //////////////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////////
 
         function checkRealtiveRebounds() {
             //toggle checkbox
@@ -213,35 +208,35 @@
         function keyDownHandler(e) {
             //Bottom player
             if(e.key == "Right" || e.key == "ArrowRight") {
-                bottomPlayerRightPress = true;
+                bottomPaddle.rightPress = true;
             }
             
             else if(e.key == "Left" || e.key == "ArrowLeft") {
-                bottomPlayerLeftPress = true;
+                bottomPaddle.leftPress = true;
             }
 
             //Top player
             if(e.key == "a") {
-                topPlayerLeftPress = true;
+                topPaddle.leftPress = true;
             }       
             else if(e.key == "d") {
-                topPlayerRightPress = true;
+                topPaddle.rightPress = true;
             }
 
             //Left player
             if(e.key == "o") {
-                leftPlayerUpPress = true;
+                leftPaddle.upPress = true;
             }
             else if(e.key == "l") {
-                leftPlayerDownPress = true;
+                leftPaddle.downPress = true;
             }
 
             //Right player
             if(e.key == "-" ) {
-                rightPlayerUpPress = true;
+                rightPaddle.upPress = true;
             }
             else if(e.key == "+") {
-                rightPlayerDownPress = true;
+                rightPaddle.downPress = true;
             }
 
             //Resize
@@ -253,35 +248,34 @@
         function keyUpHandler(e) {
             //Bottom player
             if(e.key == "Right" || e.key == "ArrowRight") {
-                bottomPlayerRightPress = false;
+                bottomPaddle.rightPress = false;
             }
             else if(e.key == "Left" || e.key == "ArrowLeft") {
-                bottomPlayerLeftPress = false;
+                bottomPaddle.leftPress = false;
             }
 
             //Top player
             if(e.key == "a") {
-                topPlayerLeftPress = false;
+                topPaddle.leftPress = false;
             }       
             else if(e.key == "d") {
-                topPlayerRightPress = false;
+                topPaddle.rightPress = false;
             }
 
             //Left player
             if(e.key == "o") {
-                leftPlayerUpPress = false;
+                leftPaddle.upPress = false;
             }
             else if(e.key == "l") {
-                leftPlayerDownPress = false;
+                leftPaddle.downPress = false;
             }
 
             //Right player
             if(e.key == "-" ) {
-                rightPlayerUpPress = false;
-                alert(right);
+                rightPaddle.upPress = false;
             }
             else if(e.key == "+") {
-                rightPlayerDownPress = false;
+                rightPaddle.downPress = false;
             }
 
             //Resize
@@ -296,16 +290,16 @@
             var relativeY = e.clientY - canvas.offsetTop;
             if(relativeX > 0 && relativeX < canvas.width) {
                 //document.getElementById("xPosMouse").innerHTML = relativeX;
-                bottomPaddleX = Math.round(Math.round(relativeX - paddleWidth/2)/10)*10;
-                topPaddleX = Math.round(Math.round(relativeX - paddleWidth/2)/10)*10;
+                bottomPaddle.x = Math.round(Math.round(relativeX - bottomPaddle.width/2)/10)*10;
+                topPaddle.x = Math.round(Math.round(relativeX - topPaddle.width/2)/10)*10;
                 
                 
 
             }
             if(relativeY > 0 && relativeY < canvas.height) {
                 //document.getElementById("yPosMouse").innerHTML = relativeY;
-                leftPaddleY = Math.round(Math.round(relativeY - paddleWidth/2)/10)*10;
-                rightPaddleY = Math.round(Math.round(relativeY - paddleWidth/2)/10)*10;
+                leftPaddle.y = Math.round(Math.round(relativeY - leftPaddle.width/2)/10)*10;
+                rightPaddle.y = Math.round(Math.round(relativeY - rightPaddle.width/2)/10)*10;
             }
         }
 
@@ -324,21 +318,27 @@
         function drawBall(ball) {
             //Ball 1
             //Have ball start in a random direction
-            if(initialPos == true) {
+            if(ball.initialPos == true) {
 
                 ball.dx = getRandomArbitrary(0, speedRatio) * (Math.round(Math.random()) * 2 - 1);          
                 ball.dy = Math.sqrt(speedRatio*speedRatio - ball.dx*ball.dx) * (Math.round(Math.random()) * 2 - 1);
                 ball.x = canvas.height/2;
                 ball.y = canvas.height/2;
             }
-            initialPos = false;
+            ball.initialPos = false;
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI*2);
             ctx.fillStyle = ball.colour;
             ctx.fill();
             ctx.closePath();
-            document.getElementById("ballX").innerHTML = ball.x;
-            document.getElementById("ballY").innerHTML = ball.y;
+
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI*2);
+            ctx.stroke();
+            ctx.closePath();
+
+            document.getElementById("ballX").innerHTML = Math.round(ball.x * 100) / 100;
+            document.getElementById("ballY").innerHTML = Math.round(ball.y * 100) / 100;
         }
 
         function drawPowerup(powerup) {
@@ -367,107 +367,274 @@
             ctx.stroke();
             ctx.closePath();
 
-            //Temp
-            // ctx.beginPath();
-            // ctx.rect(powerup.x - powerup.size/2, powerup.y - powerup.size/2, powerup.size, powerup.size);
-            // ctx.fillStyle = "#000000";
-            // ctx.stroke();
-            // ctx.closePath();
-
             var size = powerup.size + 5;
             var font = size + "px serif";
             ctx.font = font;
-            //alert(font);
             ctx.textAlign = "center";
             ctx.fillText('?', powerup.x + powerup.size/2, powerup.y + powerup.size - 3);
             
         }
 
+        function givePowerup(ball) {
+            //Get the owner
+            var owner;
+            //alert(ball.owner);
+            if(ball.owner == 'top') {
+                deployPowerup(topPaddle);
+            }
+            else if (ball.owner == 'left') {
+                deployPowerup(leftPaddle);
+            }
+            else if (ball.owner == 'right') {
+                deployPowerup(rightPaddle);
+            }
+            else if (ball.owner == 'bottom') {
+                deployPowerup(bottomPaddle);
+            }
+            else return;
+
+            
+            
+        }
+
+        function deployPowerup(paddle) {
+            //Pick a random powerup
+            var rand = Math.floor(Math.random() * 4);  //0 - 4
+
+            if(rand == 0) {
+                if(paddle.width < 2*defaultPaddleWidth) paddle.width *= 2;              
+            }
+            else if(rand == 1) {
+                if(paddle.width > defaultPaddleWidth/2) paddle.width /= 2;
+                
+            }
+            else if(rand == 2) {
+                if(paddle.lives < 3) paddle.lives++;
+            }
+            else if(rand == 3) {
+                if(ballSpeed < 2*defaultBallSpeed) {
+                    ballSpeed *= 2;
+                    speedRatio = Math.sqrt((ballSpeed*ballSpeed) + (ballSpeed*ballSpeed));
+                }
+                
+            }
+            else if(rand == 4) {
+                
+            }
+        }
+
         function drawLives() {
             var height = borderWidth/3;
             var gap = height/2;
+            var lives = 0;
+
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2, 0);
+            ctx.lineTo(canvas.width/2, canvas.height);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height/2);
+            ctx.lineTo(canvas.width, canvas.height/2);
+            ctx.stroke();
+            ctx.closePath();
+
+            // lives = topPaddle.lives;
+            // for(var i = 0; i <topPaddle.lives; i++) {
+            //     ctx.beginPath();
+            //     ctx.arc(canvas.width/2 + i*(gap+height), height, height/2, 0, Math.PI*2);
+            //     ctx.fillStyle = topPaddle.colour;
+            //     ctx.fill();
+            //     ctx.stroke();
+            //     ctx.closePath();
+            // }
 
             //Top
-            if(p1 > 1) {
+            if(topPaddle.lives > 2) {
                 ctx.beginPath();
-                ctx.arc(canvas.width/2 - height, height, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p1Colour;
+                ctx.arc(canvas.width/2 - 2*height, height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = topPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
+
                 ctx.beginPath();
-                ctx.arc(canvas.width/2 + height, height, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p1Colour;
+                ctx.arc(canvas.width/2, height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = topPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 + 2*height, height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = topPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
             }
-            else if(p1 > 0) {
+            else if(topPaddle.lives > 1) {
                 ctx.beginPath();
-                ctx.arc(canvas.width/2 - height/2, height, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p1Colour;
+                ctx.arc(canvas.width/2 - height, height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = topPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 + height, height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = topPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+            }
+            else if(topPaddle.lives > 0) {
+                ctx.beginPath();
+                ctx.arc(canvas.width/2, height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = topPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
             }
 
             //Left
-            if(p2 > 1) {
+            if (leftPaddle.lives > 2) {
                 ctx.beginPath();
-                ctx.arc(height, canvas.height/2 - height, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p2Colour;
+                ctx.arc(height, canvas.height/2 - 2*height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = leftPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
+
                 ctx.beginPath();
-                ctx.arc(height, canvas.height/2 + height, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p2Colour;
+                ctx.arc(height, canvas.height/2, height/2, 0, Math.PI*2);
+                ctx.fillStyle = leftPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(height, canvas.height/2 + 2*height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = leftPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
             }
-            else if(p2 > 0) {
+            else if(leftPaddle.lives > 1) {
                 ctx.beginPath();
-                ctx.arc(height, canvas.height/2 - height/2, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p2Colour;
+                ctx.arc(height, canvas.height/2 - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = leftPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(height, canvas.height/2 + height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = leftPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+            }
+            else if(leftPaddle.lives > 0) {
+                ctx.beginPath();
+                ctx.arc(height, canvas.height/2, height/2, 0, Math.PI*2);
+                ctx.fillStyle = leftPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
             }
 
             //Right
-            if(p3 > 1) {
+            if (rightPaddle.lives > 2) {
                 ctx.beginPath();
-                ctx.arc(canvas.width - height, canvas.height/2 - height, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p3Colour;
+                ctx.arc(canvas.width - height, canvas.height/2 - 2*height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = rightPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
+
                 ctx.beginPath();
-                ctx.arc(canvas.width - height, canvas.height/2 + height, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p3Colour;
+                ctx.arc(canvas.width - height, canvas.height/2, height/2, 0, Math.PI*2);
+                ctx.fillStyle = rightPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(canvas.width - height, canvas.height/2 + 2*height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = rightPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
             }
-            else if(p3 > 0) {
+            else if(rightPaddle.lives > 1) {
                 ctx.beginPath();
-                ctx.arc(canvas.width - height, canvas.height/2 - height/2, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p3Colour;
+                ctx.arc(canvas.width - height, canvas.height/2 - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = rightPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(canvas.width - height, canvas.height/2 + height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = rightPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+            }
+            else if(rightPaddle.lives > 0) {
+                ctx.beginPath();
+                ctx.arc(canvas.width - height, canvas.height/2, height/2, 0, Math.PI*2);
+                ctx.fillStyle = rightPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
             }
 
             //Bottom
-            if(p4 > 1) {
+            if (bottomPaddle.lives > 2) {
                 ctx.beginPath();
-                ctx.arc(canvas.width/2 - height, canvas.height - height, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p4Colour;
+                ctx.arc(canvas.width/2 - 2*height, canvas.height - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = bottomPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
+
                 ctx.beginPath();
-                ctx.arc(canvas.width/2 + height, canvas.height - height, height/2, 0, Math.PI*2);
-                ctx.fillStyle =p4Colour;
+                ctx.arc(canvas.width/2, canvas.height - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = bottomPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 + 2*height, canvas.height - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = bottomPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
             }
-            else if(p4 > 0) {
+            else if(bottomPaddle.lives > 1) {
                 ctx.beginPath();
-                ctx.arc(canvas.width/2 - height/2 , canvas.height - height, height/2, 0, Math.PI*2);
-                ctx.fillStyle = p4Colour;
+                ctx.arc(canvas.width/2 - height, canvas.height - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = bottomPaddle.colour;
                 ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(canvas.width/2 + height, canvas.height - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = bottomPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+            }
+            else if(bottomPaddle.lives > 0) {
+                ctx.beginPath();
+                ctx.arc(canvas.width/2, canvas.height - height, height/2, 0, Math.PI*2);
+                ctx.fillStyle = bottomPaddle.colour;
+                ctx.fill();
+                ctx.stroke();
                 ctx.closePath();
             }
         }
@@ -485,78 +652,116 @@
 
         function drawPaddle() {
             //bottom
-            if(p4 > 0) {
+            if(bottomPaddle.lives > 0) {
                 ctx.beginPath();
-                ctx.rect(bottomPaddleX, canvas.height-borderWidth-paddleHeight, paddleWidth, paddleHeight);
-                ctx.fillStyle = p4Colour;
+                ctx.rect(bottomPaddle.x, canvas.height-borderWidth-paddleHeight, bottomPaddle.width, paddleHeight);
+                ctx.fillStyle = bottomPaddle.colour;
                 ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.rect(bottomPaddle.x, canvas.height-borderWidth-paddleHeight, bottomPaddle.width, paddleHeight);
+                ctx.stroke();
                 ctx.closePath();
             }
             else {
                 ctx.beginPath();
                 ctx.rect(borderWidth + paddleHeight, canvas.height-borderWidth-paddleHeight, canvas.width - 2*borderWidth - 2*paddleHeight, paddleHeight);
-                ctx.fillStyle = p4Colour;
+                ctx.fillStyle = bottomPaddle.colour;
                 ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.rect(borderWidth + paddleHeight, canvas.height-borderWidth-paddleHeight, canvas.width - 2*borderWidth - 2*paddleHeight, paddleHeight);
+                ctx.stroke();
                 ctx.closePath();
             }
             
 
             //top
-            if(p1 > 0) {
+            if(topPaddle.lives > 0) {
                 ctx.beginPath();
-                ctx.rect(topPaddleX, borderWidth, paddleWidth, paddleHeight);
-                ctx.fillStyle = p1Colour;
+                ctx.rect(topPaddle.x, borderWidth, topPaddle.width, paddleHeight);
+                ctx.fillStyle = topPaddle.colour;
                 ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.rect(topPaddle.x, borderWidth, topPaddle.width, paddleHeight);
+                ctx.stroke();
                 ctx.closePath();
             }
             else {
                 ctx.beginPath();
                 ctx.rect(borderWidth + paddleHeight, borderWidth, canvas.width - 2*borderWidth - 2*paddleHeight, paddleHeight);
-                ctx.fillStyle = p1Colour;
+                ctx.fillStyle = topPaddle.colour;
                 ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.rect(borderWidth + paddleHeight, borderWidth, canvas.width - 2*borderWidth - 2*paddleHeight, paddleHeight);
+                ctx.stroke();
                 ctx.closePath();
             }
             
 
             //left
-            if(p2 > 0) {
+            if(leftPaddle.lives > 0) {
                 ctx.beginPath();
-                ctx.rect(borderWidth, leftPaddleY, paddleHeight, paddleWidth);
-                ctx.fillStyle = p2Colour;
+                ctx.rect(borderWidth, leftPaddle.y, paddleHeight, leftPaddle.width);
+                ctx.fillStyle = leftPaddle.colour;
                 ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.rect(borderWidth, leftPaddle.y, paddleHeight, leftPaddle.width);
+                ctx.stroke();
                 ctx.closePath();
             }
             else {
                 ctx.beginPath();
                 ctx.rect(borderWidth, borderWidth + paddleHeight, paddleHeight, canvas.height - 2*borderWidth - 2*paddleHeight);
-                ctx.fillStyle = p2Colour;
+                ctx.fillStyle = leftPaddle.colour;
                 ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.rect(borderWidth, borderWidth + paddleHeight, paddleHeight, canvas.height - 2*borderWidth - 2*paddleHeight);
+                ctx.stroke();
                 ctx.closePath();
             }
             
             
 
             //right
-            if(p3 > 0) {
+            if(rightPaddle.lives > 0) {
                 ctx.beginPath();
-                ctx.rect(canvas.width - paddleHeight - borderWidth, rightPaddleY, paddleHeight, paddleWidth);
-                ctx.fillStyle = p3Colour;
+                ctx.rect(canvas.width - paddleHeight - borderWidth, rightPaddle.y, paddleHeight, rightPaddle.width);
+                ctx.fillStyle = rightPaddle.colour;
                 ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.rect(canvas.width - paddleHeight - borderWidth, rightPaddle.y, paddleHeight, rightPaddle.width);
+                ctx.stroke();
                 ctx.closePath();
             }
             else {
                 ctx.beginPath();
                 ctx.rect(canvas.width - paddleHeight - borderWidth, borderWidth + paddleHeight, paddleHeight, canvas.height - 2*borderWidth - 2*paddleHeight);
-                ctx.fillStyle = p3Colour;
+                ctx.fillStyle = rightPaddle.colour;
                 ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.rect(canvas.width - paddleHeight - borderWidth, borderWidth + paddleHeight, paddleHeight, canvas.height - 2*borderWidth - 2*paddleHeight);
+                ctx.stroke();
                 ctx.closePath();
             }
         }
         
 
         function draw() {
-            //ctx.canvas.height = window.innerHeight*2/3;
-            //ctx.canvas.width = window.innerHeight*2/3;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             if(randResizeToggle == true) {
                 
@@ -565,18 +770,8 @@
             }
 
             //Show positions
-            document.getElementById("xPosBottom").innerHTML = bottomPaddleX;
-            document.getElementById("xPosBottom").innerHTML = bottomPaddleX;
-            document.getElementById("xPosTop").innerHTML = topPaddleX;
-            document.getElementById("xPosTop").innerHTML = topPaddleX;
-            document.getElementById("yPosLeft").innerHTML = leftPaddleY;
-            document.getElementById("yPosLeft").innerHTML = leftPaddleY;
-            document.getElementById("yPosRight").innerHTML = rightPaddleY;
-            document.getElementById("yPosRight").innerHTML = rightPaddleY;
-            document.getElementById("canvasWidth").innerHTML = canvas.width;
-            document.getElementById("borderWidth").innerHTML = borderWidth;
-            document.getElementById("ballDx").innerHTML = ball1.dx;
-            document.getElementById("ballDy").innerHTML = ball1.dy;
+            document.getElementById("ballDx").innerHTML = Math.round(ball1.dx * 100) / 100;
+            document.getElementById("ballDy").innerHTML = Math.round(ball1.dy * 100) / 100;
 
             
             drawLives();
@@ -606,36 +801,37 @@
 
             //Move paddles
             //Bottom player
-            if(bottomPlayerRightPress && bottomPaddleX < canvas.width-paddleWidth-borderWidth-paddleHeight) {
-                bottomPaddleX += paddleSpeed;
+            if(bottomPaddle.rightPress && bottomPaddle.x < canvas.width-bottomPaddle.width-borderWidth-paddleHeight) {
+                bottomPaddle.x += paddleSpeed;
             }
-            else if(bottomPlayerLeftPress && bottomPaddleX > borderWidth + paddleHeight) {
-                bottomPaddleX -= paddleSpeed;
+            else if(bottomPaddle.leftPress && bottomPaddle.x > borderWidth + paddleHeight) {
+                bottomPaddle.x -= paddleSpeed;
                 
             }
 
             //Top player
-            if(topPlayerRightPress && topPaddleX < canvas.width-paddleWidth-borderWidth-paddleHeight) {
-                topPaddleX += paddleSpeed;
+            if(topPaddle.rightPress && topPaddle.x < canvas.width-topPaddle.width-borderWidth-paddleHeight) {
+                //alert('here');
+                topPaddle.x += paddleSpeed;
             }
-            else if(topPlayerLeftPress && topPaddleX > borderWidth + paddleHeight) {               
-                topPaddleX -= paddleSpeed;
+            else if(topPaddle.leftPress && topPaddle.x > borderWidth + paddleHeight) {               
+                topPaddle.x -= paddleSpeed;
             }
 
             //Left player
-            if(leftPlayerUpPress && leftPaddleY > borderWidth + paddleHeight) {  
-                leftPaddleY -= paddleSpeed;
+            if(leftPaddle.upPress && leftPaddle.y > borderWidth + paddleHeight) {  
+                leftPaddle.y -= paddleSpeed;
             }
-            else if(leftPlayerDownPress && leftPaddleY < canvas.height-paddleWidth-borderWidth-paddleHeight) {
-                leftPaddleY += paddleSpeed;
+            else if(leftPaddle.downPress && leftPaddle.y < canvas.height-leftPaddle.width-borderWidth-paddleHeight) {
+                leftPaddle.y += paddleSpeed;
             }
 
             //Right player
-            if(rightPlayerUpPress && rightPaddleY > borderWidth + paddleHeight) {
-                rightPaddleY -= paddleSpeed;
+            if(rightPaddle.upPress && rightPaddle.y > borderWidth + paddleHeight) {
+                rightPaddle.y -= paddleSpeed;
             }
-            else if(rightPlayerDownPress && rightPaddleY < canvas.height-paddleWidth-borderWidth-paddleHeight) {
-                rightPaddleY += paddleSpeed;
+            else if(rightPaddle.downPress && rightPaddle.y < canvas.height-rightPaddle.width-borderWidth-paddleHeight) {
+                rightPaddle.y += paddleSpeed;
             }
 
             //Move ball1
@@ -647,7 +843,7 @@
         draw();
 
 
-        //////////////////////////////// Collision Functions ///////////////////////////////////////////
+        /////////////////////////////////////////////////////// Collision Functions //////////////////////////////////////////////////////////////////
 
         function powerupCollision(ball, powerup) {
             //alert('here');
@@ -657,10 +853,11 @@
             && ball.y + ball.dy > powerup.y - ballRadius
             && ball.y + ball.dy < powerup.y + powerup.size + ballRadius) {
                 var player = ball.owner;
-                document.getElementById("status").innerHTML = player;
+                document.getElementById("status").innerHTML = "Powerup Owner: " + player;
                 //alert('collision');
                 //alert('player :' + player);
                 powerup.active = false;
+                givePowerup(ball);
                 drawPowerup(powerup);
                 ball.owner = 'none';
             }
@@ -669,28 +866,28 @@
 
         function bottomCollision(ball) {
             if(ball.y + ball.dy > canvas.height-borderWidth-ballRadius-paddleHeight) { 
-                if(p4 == 0) {
+                if(bottomPaddle.lives == 0) {
                     ball.dy = -ball.dy;
                     document.getElementById("status").innerHTML = "Bottom Paddle: Wall";
                     changeColour(ball); 
                 }
 
                 //Check if ball has collided with paddle
-                if(ball.x + ball.dx > bottomPaddleX - ballRadius
-                && ball.x + ball.dx < bottomPaddleX + paddleWidth + ballRadius
+                if(ball.x + ball.dx > bottomPaddle.x - ballRadius
+                && ball.x + ball.dx < bottomPaddle.x + bottomPaddle.width + ballRadius
                 && ball.y + ball.dy < canvas.height - borderWidth + ballRadius)
                 {
                     ball.owner = 'bottom';
                     //Check if it rebounds on top
-                    if(ball.x + ball.dx > bottomPaddleX - (ballRadius/2) 
-                        && ball.x + ball.dx < bottomPaddleX + paddleWidth + (ballRadius/2) 
-                        && ball.y + ball.dy < canvas.height -borderWidth -paddleHeight) {
+                    if(ball.x + ball.dx > bottomPaddle.x - (ballRadius/2) 
+                        && ball.x + ball.dx < bottomPaddle.x + bottomPaddle.width + (ballRadius/2) 
+                        && ball.y + ball.dy < canvas.height - borderWidth - paddleHeight) {
                         //Ball direction should only change once
                         if(Math.sign(ball.dy) == 1)
                         {
                             if(relativeAngleReboundToggle == true) {
-                                if(ball.x < bottomPaddleX + paddleWidth/2) {    //Left side of paddle
-                                    var angleMultiplier = (ball.x - (bottomPaddleX - ballRadius/2))/(paddleWidth/2 + ballRadius/2);
+                                if(ball.x < bottomPaddle.x + bottomPaddle.width/2) {    //Left side of paddle
+                                    var angleMultiplier = (ball.x - (bottomPaddle.x - ballRadius/2))/(bottomPaddle.width/2 + ballRadius/2);
                                     var angle = angleMultiplier * (Math.PI/2);
                                     document.getElementById("status").innerHTML = angleMultiplier;
                                     ball.dy = -(speedRatio * Math.sin(angle));
@@ -698,8 +895,8 @@
                                     if(sign == 0) sign = -1; 
                                     ball.dx = sign * (speedRatio * Math.cos(angle));
                                 }
-                                else if (ball.x > bottomPaddleX + paddleWidth/2) {  //Right side of paddle
-                                    var angleMultiplier = 1-(ball.x - (bottomPaddleX + paddleWidth/2))/(paddleWidth/2 + ballRadius/2);
+                                else if (ball.x > bottomPaddle.x + bottomPaddle.width/2) {  //Right side of paddle
+                                    var angleMultiplier = 1-(ball.x - (bottomPaddle.x + bottomPaddle.width/2))/(bottomPaddle.width/2 + ballRadius/2);
                                     var angle = angleMultiplier * (Math.PI/2);
                                     document.getElementById("status").innerHTML = angleMultiplier;
                                     ball.dy = Math.round(-(speedRatio * Math.sin(angle)));
@@ -722,7 +919,7 @@
                     }
                     else{
                         //Left side
-                        if(ball.x + ball.dx > bottomPaddleX - ballRadius && ball.x + ball.dx < bottomPaddleX) {
+                        if(ball.x + ball.dx > bottomPaddle.x - ballRadius && ball.x + ball.dx < bottomPaddle.x) {
                             document.getElementById("status").innerHTML = "Bottom Paddle: Left";
                             if(Math.sign(ball.dx) == 1) {
                                 ball.dx = -ball.dx;
@@ -730,7 +927,7 @@
                             }                            
                         }
                         //Right side
-                        else if(ball.x + ball.dx < bottomPaddleX + paddleWidth + ballRadius && ball.x + ball.dx > bottomPaddleX + paddleWidth) {
+                        else if(ball.x + ball.dx < bottomPaddle.x + bottomPaddle.width + ballRadius && ball.x + ball.dx > bottomPaddle.x + bottomPaddle.width) {
                             document.getElementById("status").innerHTML = "Bottom Paddle: Right";
                             if(Math.sign(ball.dx) == -1) {
                                 ball.dx = -ball.dx;
@@ -745,10 +942,10 @@
                 else{
                     if(ball.y > canvas.height) {
                         //Take off a life
-                        p4--;
+                        bottomPaddle.lives--;
 
                         //Reset ball
-                        initialPos = true;
+                        ball.initialPos = true;
 
                         ball.x = canvas.width/2;
                         ball.y = canvas.height*4/5;
@@ -762,28 +959,28 @@
 
         function rightCollision(ball) {
             if(ball.x + ball.dx > canvas.height-borderWidth-ballRadius-paddleHeight) { 
-                if(p3 == 0) {
+                if(rightPaddle.lives == 0) {
                     ball.dx = -ball.dx;
                     document.getElementById("status").innerHTML = "Right Paddle: Wall";
                     changeColour(ball);
                 }
 
                 //Check if ball has collided with paddle
-                if(ball.y + ball.dy > rightPaddleY - ballRadius
-                && ball.y + ball.dy < rightPaddleY + paddleWidth + ballRadius
+                if(ball.y + ball.dy > rightPaddle.y - ballRadius
+                && ball.y + ball.dy < rightPaddle.y + rightPaddle.width + ballRadius
                 && ball.x + ball.dx < canvas.height - borderWidth + ballRadius)
                 {
                     ball.owner = 'right';
                     //Check if it rebounds left side
-                    if(ball.y + ball.dy > rightPaddleY - (ballRadius/2) 
-                        && ball.y + ball.dy < rightPaddleY + paddleWidth + (ballRadius/2) 
-                        && ball.x + ball.dx < canvas.height -borderWidth -paddleHeight) {
+                    if(ball.y + ball.dy > rightPaddle.y - (ballRadius/2) 
+                        && ball.y + ball.dy < rightPaddle.y + rightPaddle.width + (ballRadius/2) 
+                        && ball.x + ball.dx < canvas.height - borderWidth - paddleHeight) {
                         //Ball direction should only change once
                         if(Math.sign(ball.dx) == 1)
                         {
                             if(relativeAngleReboundToggle == true) {
-                                if(ball.y < rightPaddleY + paddleWidth/2) {     //Top half of paddle
-                                    var angleMultiplier = (ball.y - (rightPaddleY - ballRadius/2)) / (paddleWidth/2 + ballRadius/2);
+                                if(ball.y < rightPaddle.y + rightPaddle.width/2) {     //Top half of paddle
+                                    var angleMultiplier = (ball.y - (rightPaddle.y - ballRadius/2)) / (rightPaddle.width/2 + ballRadius/2);
                                     var angle = angleMultiplier * (Math.PI/2);
                                     document.getElementById("status").innerHTML = angleMultiplier;
                                     ball.dx = -(speedRatio * Math.sin(angle));
@@ -791,8 +988,8 @@
                                     if(sign == 0) sign = -1;
                                     ball.dy = sign * (speedRatio * Math.cos(angle));
                                 }
-                                else if(ball.y > rightPaddleY + paddleWidth/2) {   //Bottom half of paddle
-                                    var angleMultiplier = 1-((ball.y - (rightPaddleY + paddleWidth/2)) / (paddleWidth/2 + ballRadius/2));
+                                else if(ball.y > rightPaddle.y + rightPaddle.width/2) {   //Bottom half of paddle
+                                    var angleMultiplier = 1-((ball.y - (rightPaddle.y + rightPaddle.width/2)) / (rightPaddle.width/2 + ballRadius/2));
                                     var angle = angleMultiplier * (Math.PI/2);
                                     document.getElementById("status").innerHTML = angleMultiplier;
                                     ball.dx = -(speedRatio * Math.sin(angle));
@@ -815,7 +1012,7 @@
                     }
                     else{
                         //Top side
-                        if(ball.y + ball.dy > rightPaddleY - ballRadius && ball.y + ball.dy < rightPaddleY) {
+                        if(ball.y + ball.dy > rightPaddle.y - ballRadius && ball.y + ball.dy < rightPaddle.y) {
                             document.getElementById("status").innerHTML = "Right Paddle: Top";
                             if(Math.sign(ball.dy) == 1) {
                                 ball.dy = -ball.dy;
@@ -823,7 +1020,7 @@
                             }                            
                         }
                         //Bottom side
-                        else if(ball.y + ball.dy < rightPaddleY + paddleWidth + ballRadius && ball.y + ball.dy > rightPaddleY + paddleWidth) {
+                        else if(ball.y + ball.dy < rightPaddle.y + rightPaddle.width + ballRadius && ball.y + ball.dy > rightPaddle.y + rightPaddle.width) {
                             document.getElementById("status").innerHTML = "Right Paddle: Bottom";
                             if(Math.sign(ball.dy) == -1) {
                                 ball.dy = -ball.dy;
@@ -838,10 +1035,10 @@
                 else{
                     if(ball.x > canvas.height) {
                         //Take off a life
-                        p3--;
+                        rightPaddle.lives--;
 
                         //Reset ball
-                        initialPos = true;
+                        ball.initialPos = true;
 
                         ball.x = canvas.width/2;
                         ball.y = canvas.height*4/5;
@@ -855,28 +1052,28 @@
         
         function leftCollision(ball) {
             if(ball.x + ball.dx < borderWidth + paddleHeight + ballRadius) {    
-                if(p2 == 0) {
+                if(leftPaddle.lives == 0) {
                     ball.dx = -ball.dx;
                     changeColour(ball);
                     document.getElementById("status").innerHTML = "Left Paddle: Wall";
                 }           
 
                 //Check if ball has collided with paddle
-                if(ball.y + ball.dy > leftPaddleY - ballRadius
-                && ball.y + ball.dy < leftPaddleY + paddleWidth + ballRadius
+                if(ball.y + ball.dy > leftPaddle.y - ballRadius
+                && ball.y + ball.dy < leftPaddle.y + leftPaddle.width + ballRadius
                 && ball.x + ball.dx > borderWidth - ballRadius) 
                 { 
                     ball.owner = 'left';
                     //Check if it rebounds on right side
-                    if(ball.y + ball.dy > leftPaddleY - (ballRadius/2)
-                    && ball.y + ball.dy < leftPaddleY + paddleWidth + (ballRadius/2)
+                    if(ball.y + ball.dy > leftPaddle.y - (ballRadius/2)
+                    && ball.y + ball.dy < leftPaddle.y + leftPaddle.width + (ballRadius/2)
                     && ball.x + ball.dx > borderWidth + paddleHeight)
                     {
                         if(Math.sign(ball.dx) == -1)
                         {
                             if(relativeAngleReboundToggle == true) {
-                                if(ball.y < leftPaddleY + paddleWidth/2) {      //Top half of paddle
-                                    var angleMultiplier = (ball.y - (leftPaddleY - ballRadius/2)) / (paddleWidth/2 + ballRadius/2);
+                                if(ball.y < leftPaddle.y + leftPaddle.width/2) {      //Top half of paddle
+                                    var angleMultiplier = (ball.y - (leftPaddle.y - ballRadius/2)) / (leftPaddle.width/2 + ballRadius/2);
                                     var angle = angleMultiplier * (Math.PI/2);
                                     document.getElementById("status").innerHTML = angleMultiplier;
                                     ball.dx = (speedRatio * Math.sin(angle));
@@ -884,8 +1081,8 @@
                                     if(sign == 0) sign = -1;
                                     ball.dy = sign * (speedRatio * Math.cos(angle));
                                 }
-                                else if(ball.y > leftPaddleY + paddleWidth/2) {   //Bottom half of paddle
-                                    var angleMultiplier = 1-((ball.y - (leftPaddleY + paddleWidth/2)) / (paddleWidth/2 + ballRadius/2));
+                                else if(ball.y > leftPaddle.y + leftPaddle.width/2) {   //Bottom half of paddle
+                                    var angleMultiplier = 1-((ball.y - (leftPaddle.y + leftPaddle.width/2)) / (leftPaddle.width/2 + ballRadius/2));
                                     var angle = angleMultiplier * (Math.PI/2);
                                     document.getElementById("status").innerHTML = angleMultiplier;
                                     ball.dx = (speedRatio * Math.sin(angle));
@@ -908,7 +1105,7 @@
                     }
                     else {
                         //Top
-                        if(ball.y + ball.dy > leftPaddleY - ballRadius && ball.y + ball.dy < leftPaddleY) {
+                        if(ball.y + ball.dy > leftPaddle.y - ballRadius && ball.y + ball.dy < leftPaddle.y) {
                             if(Math.sign(ball.dy) == 1)
                             {
                                 ball.dy = -ball.dy;
@@ -917,7 +1114,7 @@
                             }                            
                         }
                         //Bottom
-                        else if(ball.y + ball.dy < leftPaddleY + paddleWidth + ballRadius && ball.y + ball.dy > leftPaddleY + paddleWidth) {
+                        else if(ball.y + ball.dy < leftPaddle.y + leftPaddle.width + ballRadius && ball.y + ball.dy > leftPaddle.y + leftPaddle.width) {
                             if(Math.sign(ball.dy) == -1)
                             {
                                 ball.dy = -ball.dy;
@@ -933,10 +1130,10 @@
                 else {
                     if(ball.x < 0) {
                         //Take off a life
-                        p2--;
+                        leftPaddle.lives--;
 
                         //Reset ball
-                        initialPos = true;
+                        ball.initialPos = true;
 
                         ball.x = canvas.width/2;
                         ball.y = canvas.height*4/5;
@@ -950,28 +1147,30 @@
 
         function topCollision(ball) {
             if(ball.y + ball.dy < borderWidth + paddleHeight + ballRadius) {
-                if(p1 == 0) {
+                if(topPaddle.lives == 0) {
                     ball.dy = -ball.dy;
                     changeColour(ball);
                     document.getElementById("status").innerHTML = "Top Paddle: Wall";
                 }
                 
                 //Check if ball has collided with paddle
-                if(ball.x + ball.dx > topPaddleX - ballRadius
-                && ball.x + ball.dx < topPaddleX + paddleWidth + ballRadius
+                if(ball.x + ball.dx > topPaddle.x - ballRadius
+                && ball.x + ball.dx < topPaddle.x + topPaddle.width + ballRadius
                 && ball.y + ball.dy > borderWidth - ballRadius) 
                 { 
+                    //alert(topPaddle.x);
                     ball.owner = 'top';
                     //Check if it rebounds on bottom
-                    if(ball.x + ball.dx > topPaddleX - (ballRadius/2)
-                    && ball.x + ball.dx < topPaddleX + paddleWidth + (ballRadius/2)
+                    if(ball.x + ball.dx > topPaddle.x - (ballRadius/2)
+                    && ball.x + ball.dx < topPaddle.x + topPaddle.width + (ballRadius/2)
                     && ball.y + ball.dy > borderWidth + paddleHeight)
                     {
+                        
                         if(Math.sign(ball.dy) == -1)
                         {
                             if(relativeAngleReboundToggle == true) {
-                                if(ball.x < topPaddleX + paddleWidth/2) {    //Left side of paddle
-                                    var angleMultiplier = (ball.x - (topPaddleX - ballRadius/2))/(paddleWidth/2 + ballRadius/2);
+                                if(ball.x < topPaddle.x + topPaddle.width/2) {    //Left side of paddle
+                                    var angleMultiplier = (ball.x - (topPaddle.x - ballRadius/2))/(topPaddle.width/2 + ballRadius/2);
                                     var angle = angleMultiplier * (Math.PI/2);
                                     document.getElementById("status").innerHTML = angleMultiplier;
                                     ball.dy = (speedRatio * Math.sin(angle));
@@ -979,8 +1178,8 @@
                                     if(sign == 0) sign = -1; 
                                     ball.dx = sign * (speedRatio * Math.cos(angle));
                                 }
-                                else if (ball.x > topPaddleX + paddleWidth/2) {  //Right side of paddle
-                                    var angleMultiplier = 1-(ball.x - (topPaddleX + paddleWidth/2))/(paddleWidth/2 + ballRadius/2);
+                                else if (ball.x > topPaddle.x + topPaddle.width/2) {  //Right side of paddle
+                                    var angleMultiplier = 1-(ball.x - (topPaddle.x + topPaddle.width/2))/(topPaddle.width/2 + ballRadius/2);
                                     var angle = angleMultiplier * (Math.PI/2);
                                     document.getElementById("status").innerHTML = angleMultiplier;
                                     ball.dy = (speedRatio * Math.sin(angle));
@@ -1003,7 +1202,7 @@
                     }
                     else {
                         //Top
-                        if(ball.x + ball.dx > topPaddleX - ballRadius && ball.x + ball.dx < topPaddleX) {
+                        if(ball.x + ball.dx > topPaddle.x - ballRadius && ball.x + ball.dx < topPaddle.x) {
                             if(Math.sign(ball.dx) == 1)
                             {
                                 ball.dx = -ball.dx;
@@ -1012,7 +1211,7 @@
                             }                            
                         }
                         //Bottom
-                        else if(ball.x + ball.dx < topPaddleX + paddleWidth + ballRadius && ball.x + ball.dx > topPaddleX + paddleWidth) {
+                        else if(ball.x + ball.dx < topPaddle.x + topPaddle.width + ballRadius && ball.x + ball.dx > topPaddle.x + topPaddle.width) {
                             if(Math.sign(ball.dx) == -1)
                             {
                                 ball.dx = -ball.dx;
@@ -1028,10 +1227,10 @@
                 else {
                     if(ball.y < 0) {
                         //Take off a life
-                        p1--;
+                        topPaddle.lives--;
 
                         //Reset ball
-                        initialPos = true;
+                        ball.initialPos = true;
 
                         ball.x = canvas.width/2;
                         ball.y = canvas.height*4/5;
