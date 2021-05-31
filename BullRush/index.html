@@ -15,27 +15,41 @@
 </head>
 <body>
     <canvas id="gameCanvas" width="1366" height="768">Your browser does not support the HTML5 canvas tag.
-        <script type = 'text/javascript' src="Scripts/main.js"></script>
+        <script type = 'text/javascript' src="/main.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script>
+            var socketType = 'game';
             var socket = io();
+            
+            var url = window.location.href;
+            var socket = io.connect(url + "?data=" + socketType);
     
-            socket.on('left down', function() {
-                leftPressed = true;
-                //document.dispatchEvent(leftarrowdown);
+            socket.on('controller connection', (id)=>{
+                console.log("New Controller: " + id);
+                playerAdd(id);
             });
-            socket.on('left up', function() {
-                leftPressed = false;
-                //document.dispatchEvent(leftarrowup);
+
+            socket.onAny((event, id) =>{
+                console.log("Recieved: " + event + " from: " + id);
+                socketUpdate(id, event);
             });
-            socket.on('right down', function() {
-                rightPressed = true;
-                //document.dispatchEvent(rightarrowdown);
-            });
-            socket.on('right up', function() {
-                rightPressed = false;
-                //document.dispatchEvent(rightarrowup);
-            });
+
+            // socket.on('left down', function() {
+            //     leftPressed = true;
+            //     //document.dispatchEvent(leftarrowdown);
+            // });
+            // socket.on('left up', function() {
+            //     leftPressed = false;
+            //     //document.dispatchEvent(leftarrowup);
+            // });
+            // socket.on('right down', function() {
+            //     rightPressed = true;
+            //     //document.dispatchEvent(rightarrowdown);
+            // });
+            // socket.on('right up', function() {
+            //     rightPressed = false;
+            //     //document.dispatchEvent(rightarrowup);
+            // });
             
         </script>
     </canvas> 

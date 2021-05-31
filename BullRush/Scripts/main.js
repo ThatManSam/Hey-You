@@ -73,13 +73,13 @@ function draw() {
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
     // Roud restart occurs here
-    if (players.length == 0) {
-        ctx.fillStyle = "black";
-        ctx.font = "100px Arial";
-        ctx.fillText('GAME OVER - RELOADING', 40, canvas.height / 2);
-        setTimeout(() => { document.location.reload(); }, 2000);
-        // Will need to add logic for keeping sockets conected  
-    }
+    // if (players.length == 0) {
+    //     ctx.fillStyle = "black";
+    //     ctx.font = "100px Arial";
+    //     ctx.fillText('GAME OVER - RELOADING', 40, canvas.height / 2);
+    //     setTimeout(() => { document.location.reload(); }, 2000);
+    //     // Will need to add logic for keeping sockets conected  
+    // }
     drawTeam(players);
     drawTeam(taggers);
 
@@ -97,9 +97,11 @@ function draw() {
 // Have to add the socket here
 function playerAdd(newSocket) {
     if (taggers.length == 0) {
+        console.log("Added tagger: " + newSocket);
         taggers.push(new player(canvas.width / 3 + random(0, 200), random(0, canvas.height), 1, newSocket, taggers.length));
 
     } else {
+        console.log("Added player: " + newSocket);
         players.push(new player(0, random(0, canvas.height), 0, newSocket, players.length));
     }
 
@@ -173,7 +175,7 @@ function socketUpdate(num, e) {
 
 function loopTeamSocketUpdate(num, e, team){
     for(var i = 0; i < team.length; i++){
-        if (team[i].socket(num,e))
+        if (team[i].socketEventHandler(num,e))
             return true;
     }
     return false;
@@ -202,6 +204,7 @@ class player {
 
     socketEventHandler(num, e) {
         // Only allow updates for identical sockets?
+        
         if (num == socket){
             switch (e) {
                 case "upOn":
@@ -294,7 +297,7 @@ class player {
         }
     }
 }
-for (var i = 0; i < 200; i++) {
-    playerAdd(i);
-}
+//for (var i = 0; i < 200; i++) {
+//    playerAdd(i);
+//}
 draw();

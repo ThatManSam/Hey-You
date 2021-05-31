@@ -85,24 +85,24 @@
 
         // FOR ALL
         // changes the color of the left or right arrow of the display of that controllers section
-        socket.on('left down', (id) => {
+        socket.on('leftOn', (id) => {
             document.getElementById(id).getElementsByClassName("left")[0].style.backgroundColor = "burlywood";
             leftPressed = true;
             //document.dispatchEvent(leftarrowdown);
             //alert("left was clicked down");
             
         });
-        socket.on('left up', (id) => {
+        socket.on('leftOff', (id) => {
             document.getElementById(id).getElementsByClassName("left")[0].style.backgroundColor = "cadetblue";
             leftPressed = false;
             //document.dispatchEvent(leftarrowup);
         });
-        socket.on('right down', (id) => {
+        socket.on('rightOn', (id) => {
             document.getElementById(id).getElementsByClassName("right")[0].style.backgroundColor = "burlywood";
             rightPressed = true;
             //document.dispatchEvent(rightarrowdown);
         });
-        socket.on('right up', (id) => {
+        socket.on('rightOff', (id) => {
             document.getElementById(id).getElementsByClassName("right")[0].style.backgroundColor = "cadetblue";
             rightPressed = false;
             //document.dispatchEvent(rightarrowup);

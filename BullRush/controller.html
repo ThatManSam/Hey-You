@@ -44,6 +44,9 @@
   <body>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        var socketType = 'controller';
+        var url = window.location.href;
+        var socket = io.connect(url + "?data=" + socketType);
         var socket = io();
 
         var form = document.getElementById('form');
@@ -63,6 +66,16 @@
             document.getElementById("right").style.backgroundColor = "burlywood";
             socket.emit('right key down');
           }
+          if (e.key == 'ArrowUp'){
+            console.log('Up');
+            //document.getElementById("left").style.backgroundColor = "burlywood";
+            socket.emit('up key down');
+          }
+          if (e.key == 'ArrowDown'){
+            console.log('Down');
+            //document.getElementById("right").style.backgroundColor = "burlywood";
+            socket.emit('down key down');
+          }
           //alert("Key pressed: "+ e.key)
           //socket.emit('key down', e.key);
         }
@@ -75,6 +88,16 @@
           if (e.key == 'ArrowRight'){
             document.getElementById("right").style.backgroundColor = "cadetblue";
             socket.emit('right key up');
+          }
+          if (e.key == 'ArrowUp'){
+            console.log('Up');
+            //document.getElementById("left").style.backgroundColor = "burlywood";
+            socket.emit('up key up');
+          }
+          if (e.key == 'ArrowDown'){
+            console.log('Down');
+            //document.getElementById("right").style.backgroundColor = "burlywood";
+            socket.emit('down key up');
           }
           //alert("Key pressed: "+ e.key)
           //socket.emit('key up', e.key);

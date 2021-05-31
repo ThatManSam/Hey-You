@@ -72,12 +72,12 @@
           if (e.key == 'ArrowLeft'){
             console.log('Left');
             document.getElementById("left").style.backgroundColor = "burlywood";
-            socket.emit('left key down');
+            socket.emit('leftOn');
           }
           if (e.key == 'ArrowRight'){
             console.log('Right');
             document.getElementById("right").style.backgroundColor = "burlywood";
-            socket.emit('right key down');
+            socket.emit('rightOn');
           }
           //alert("Key pressed: "+ e.key)
           //socket.emit('key down', e.key);
@@ -86,11 +86,11 @@
         function buttonup(e) {
           if (e.key == 'ArrowLeft'){
             document.getElementById("left").style.backgroundColor = "cadetblue";
-            socket.emit('left key up');
+            socket.emit('leftOff');
           }
           if (e.key == 'ArrowRight'){
             document.getElementById("right").style.backgroundColor = "cadetblue";
-            socket.emit('right key up');
+            socket.emit('rightOff');
           }
           //alert("Key pressed: "+ e.key)
           //socket.emit('key up', e.key);

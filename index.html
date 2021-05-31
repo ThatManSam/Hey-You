@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+        .button {
+            position: relative;
+            margin: auto;
+            margin-top: 5px;
+            padding: 10px;
+            text-align: center;
+            width: 400px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            color: black;
+            font-size: 50px;
+            text-decoration: none;
+            background-color: burlywood;
+        }
+    </style>
+</head>
+<body>
+<h1>Select Game</h1>
+<a onclick="selectGame('/multipleControllers')" style="text-decoration: none"><div class="button">Multiple Controllers</div></a>
+<a onclick="selectGame('/BullRush')" style="text-decoration: none"><div class="button">Bull Rush</div></a>
+<a onclick="selectGame('/JoysticksWithSockets')" style="text-decoration: none"><div class="button">Joysticks With Sockets</div></a>
+<a onclick="selectGame('/HammerWorkingWithSockets')" style="text-decoration: none"><div class="button">Hammer Working With Sockets</div></a>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+    function selectGame(game) {
+        socket.emit("selectGame", game, (response) => {
+            console.log("Redirecting to " + game);
+            window.location.pathname = '/';
+        });
+    }
+</script>
+</body>
+</html>

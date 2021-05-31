@@ -8,22 +8,33 @@ const io = new Server(server);
 var controllerSockets = [];
 
 var gameSocket;
+var game = '';
 
-app.get('/', (req, res) => {
+app.get('/home', (req, res) => {
+    game = '';
     res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + game + '/index.html');
+});
+
+app.get('/controllerInput.js', (req, res) => {
+    var file = game + '/controllerInput.js';
+    res.sendFile(__dirname + file);
+});
+
 app.get('/game', (req, res) => {
-    res.sendFile(__dirname + '/controlGame.html');
+    res.sendFile(__dirname + game + '/controlGame.html');
 });
 
 app.get('/controller', (req, res) => {
-    res.sendFile(__dirname + '/controller.html');
+    res.sendFile(__dirname + game + '/controller.html');
 });
 
 app.get('/main.js', (req, res) => {
-    console.log(__dirname + '/Scripts/main.js');
-    res.sendFile(__dirname + '/Scripts/main.js');
+    console.log(__dirname + game + '/Scripts/main.js');
+    res.sendFile(__dirname + game + '/Scripts/main.js');
 });
 
 io.on('connection', (socket) => {
@@ -52,6 +63,7 @@ io.on('connection', (socket) => {
         if (gameSocket != null && socket.id == gameSocket){
             console.log("Reset game socket");
             gameSocket = null;
+            game = '';
         }
 
         // if a controller disconnects
@@ -72,30 +84,40 @@ io.on('connection', (socket) => {
         console.log(socketType + ' user disconnected');
     });
 
-    socket.on('left key down', () => {
-        io.emit('leftOn', socket.id);
+    socket.on('selectGame', (selected, callback) => {
+        console.log("New Game selected: " + selected);
+        game = selected;
+        callback();
     });
-    socket.on('left key up', () => {
-        io.emit('leftOff', socket.id);
-    });
-    socket.on('right key down', () => {
-        io.emit('rightOn', socket.id);
-    });
-    socket.on('right key up', () => {
-        io.emit('rightOff', socket.id);
-    });
-    socket.on('up key down', () => {
-        io.emit('upOn', socket.id);
-    });
-    socket.on('up key up', () => {
-        io.emit('upOff', socket.id);
-    });
-    socket.on('down key down', () => {
-        io.emit('downOn', socket.id);
-    });
-    socket.on('down key up', () => {
-        io.emit('downOff', socket.id);
-    });
+
+    socket.onAny((event) => {
+        io.emit(event, socket.id);
+    })
+
+    // socket.on('left key down', () => {
+    //     io.emit('leftOn', socket.id);
+    // });
+    // socket.on('left key up', () => {
+    //     io.emit('leftOff', socket.id);
+    // });
+    // socket.on('right key down', () => {
+    //     io.emit('rightOn', socket.id);
+    // });
+    // socket.on('right key up', () => {
+    //     io.emit('rightOff', socket.id);
+    // });
+    // socket.on('up key down', () => {
+    //     io.emit('upOn', socket.id);
+    // });
+    // socket.on('up key up', () => {
+    //     io.emit('upOff', socket.id);
+    // });
+    // socket.on('down key down', () => {
+    //     io.emit('downOn', socket.id);
+    // });
+    // socket.on('down key up', () => {
+    //     io.emit('downOff', socket.id);
+    // });
 });
 
 server.listen(3000, () => {
