@@ -19,10 +19,9 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socketType = 'game';
-            var socket = io();
-            
             var url = window.location.href;
             var socket = io.connect(url + "?data=" + socketType);
+            //var socket = io();
     
             socket.on('controller connection', (id)=>{
                 console.log("New Controller: " + id);
@@ -30,7 +29,7 @@
             });
 
             socket.onAny((event, id) =>{
-                console.log("Recieved: " + event + " from: " + id);
+                //console.log("Recieved: " + event + " from: " + id);
                 socketUpdate(id, event);
             });
 

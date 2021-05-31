@@ -96,13 +96,14 @@ function draw() {
 
 // Have to add the socket here
 function playerAdd(newSocket) {
+    var socketID = String(newSocket);
     if (taggers.length == 0) {
         console.log("Added tagger: " + newSocket);
-        taggers.push(new player(canvas.width / 3 + random(0, 200), random(0, canvas.height), 1, newSocket, taggers.length));
+        taggers.push(new player(canvas.width / 3 + random(0, 200), random(0, canvas.height), 1, socketID, taggers.length));
 
     } else {
         console.log("Added player: " + newSocket);
-        players.push(new player(0, random(0, canvas.height), 0, newSocket, players.length));
+        players.push(new player(0, random(0, canvas.height), 0, socketID, players.length));
     }
 
     // Any other logic for adding a player
@@ -182,7 +183,7 @@ function loopTeamSocketUpdate(num, e, team){
 }
 
 class player {
-    socket = null;
+    socket = '';
     type = 0; // 0 - normal player, 1 - tagger, 2 - waiting for new round
     radius = 5;
     x = 0;
@@ -204,10 +205,13 @@ class player {
 
     socketEventHandler(num, e) {
         // Only allow updates for identical sockets?
-        
-        if (num == socket){
+        console.log("Does socket: " + this.socket + " = " + num);
+        var result = (num === this.socket);
+        console.log("Result: " + result);
+        if (num === this.socket){
             switch (e) {
                 case "upOn":
+                    console.log("Move player up: On");
                     this.moveUp = true;
                     break;
     
