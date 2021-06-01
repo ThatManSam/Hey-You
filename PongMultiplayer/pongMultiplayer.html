@@ -52,7 +52,115 @@
       <https://patrickdearteaga.com/arcade-music/>
       <https://www.dl-sounds.com/royalty-free/category/game-film/video-game/?_sfm_bpm=0+220/>
       </audio>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Scripts for socket.io
+        var socketType = 'game';
+        var url = window.location.href;
+        var socket = io.connect(url + "?data=" + socketType);
+        var socket = io();
 
+        var controllers = [];
+
+        socket.on('controller connection', (id) =>{
+            var full;
+            var orient;
+            if (controllers.length <= 4) {
+                if (controllers.length === 1 || controllers.length === 3) orient = 'vertical';
+                else orient = 'horizontal';
+                full = false;
+                controllers.push(id);
+            }
+            else full = true;
+            callback = {
+                socket: id,
+                isfull: full,
+                orientation: orient
+            };
+            socket.emit('connection callback', callback);
+        });
+
+        socket.on('leftOn', (id) =>{
+            // Get the controller
+            var index = controllers.indexOf(id);
+            // Trigger the corresponding controller
+            if (index === 0) bottomPaddle.leftPress = true;
+            if (index === 2) topPaddle.leftPress = true;
+            // Wrong oriented controller triggering
+            else console.log("Input from invalid paddle: leftOn");
+        });
+
+        socket.on('leftOff', (id) =>{
+            // Get the controller
+            var index = controllers.indexOf(id);
+            // Trigger the corresponding controller
+            if (index === 0) bottomPaddle.leftPress = false;
+            if (index === 2) topPaddle.leftPress = false;
+            // Wrong oriented controller triggering
+            else console.log("Input from invalid paddle: leftOff");
+        });
+
+        socket.on('rightOn', (id) =>{
+            // Get the controller
+            var index = controllers.indexOf(id);
+            // Trigger the corresponding controller
+            if (index === 0) bottomPaddle.rightPress = true;
+            if (index === 2) topPaddle.rightPress = true;
+            // Wrong oriented controller triggering
+            else console.log("Input from invalid paddle: rightOn");
+        });
+
+        socket.on('rightOff', (id) =>{
+            // Get the controller
+            var index = controllers.indexOf(id);
+            // Trigger the corresponding controller
+            if (index === 0) bottomPaddle.rightPress = false;
+            if (index === 2) topPaddle.rightPress = false;
+            // Wrong oriented controller triggering
+            else console.log("Input from invalid paddle: rightOff");
+        });
+
+        socket.on('upOn', (id) =>{
+            // Get the controller
+            var index = controllers.indexOf(id);
+            // Trigger the corresponding controller
+            if (index === 1) leftPaddle.upPress = true;
+            if (index === 3) rightPaddle.upPress = true;
+            // Wrong oriented controller triggering
+            else console.log("Input from invalid paddle: upOn");
+        });
+
+        socket.on('upOff', (id) =>{
+            // Get the controller
+            var index = controllers.indexOf(id);
+            // Trigger the corresponding controller
+            if (index === 1) leftPaddle.upPress = false;
+            if (index === 3) rightPaddle.upPress = false;
+            // Wrong oriented controller triggering
+            else console.log("Input from invalid paddle: upOff");
+        });
+
+        socket.on('downOn', (id) =>{
+            // Get the controller
+            var index = controllers.indexOf(id);
+            // Trigger the corresponding controller
+            if (index === 1) leftPaddle.downPress = true;
+            if (index === 3) rightPaddle.downPress = true;
+            // Wrong oriented controller triggering
+            else console.log("Input from invalid paddle: downOn");
+        });
+
+        socket.on('downOff', (id) =>{
+            // Get the controller
+            var index = controllers.indexOf(id);
+            // Trigger the corresponding controller
+            if (index === 1) leftPaddle.downPress = false;
+            if (index === 3) rightPaddle.downPress = false;
+            // Wrong oriented controller triggering
+            else console.log("Input from invalid paddle: downOff");
+        });
+
+    </script>
     <script>
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");

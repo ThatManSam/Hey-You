@@ -19,6 +19,10 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + game + '/index.html');
 });
 
+app.get('/pongMultiplayer', (req, res) => {
+    res.sendFile(__dirname + game + '/pongMultiplayer.html');
+});
+
 app.get('/controllerInput.js', (req, res) => {
     var file = game + '/controllerInput.js';
     res.sendFile(__dirname + file);
@@ -54,9 +58,16 @@ io.on('connection', (socket) => {
     // if the socket is a controller send it to the game socket
     if (socketType == "controller"){
         controllerSockets.push(socket.id);
+        console.log("Triggering emit to controller with response");
         io.to(gameSocket).emit('controller connection', socket.id);
     }
 
+    socket.on('connection callback', (response) =>{
+        if (response.orientation !== null) {
+            console.log("Emiting Orientation: " + response.orientation);
+            io.to(response.socket).emit('orientation', response.orientation);
+        }
+    })
 
     socket.on('disconnect', () => {
         // if the game disconnects, release the gameSocket variable
