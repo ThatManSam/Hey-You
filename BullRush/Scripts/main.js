@@ -211,12 +211,11 @@ class player {
         if (num === this.socket){
             switch (e) {
                 case "upOn":
-                    console.log("Move player up: On");
                     this.moveUp = true;
                     break;
     
                 case "upOff":
-                    this.moveup = false;
+                    this.moveUp = false;
                     break;
     
                 case "leftOn":
@@ -241,6 +240,8 @@ class player {
     
                 case "downOff":
                     this.moveDown = false;
+                    break;
+                default:
                     break;
                 // Add more socket events here
             }

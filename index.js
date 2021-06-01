@@ -93,31 +93,6 @@ io.on('connection', (socket) => {
     socket.onAny((event) => {
         io.emit(event, socket.id);
     })
-
-    // socket.on('left key down', () => {
-    //     io.emit('leftOn', socket.id);
-    // });
-    // socket.on('left key up', () => {
-    //     io.emit('leftOff', socket.id);
-    // });
-    // socket.on('right key down', () => {
-    //     io.emit('rightOn', socket.id);
-    // });
-    // socket.on('right key up', () => {
-    //     io.emit('rightOff', socket.id);
-    // });
-    // socket.on('up key down', () => {
-    //     io.emit('upOn', socket.id);
-    // });
-    // socket.on('up key up', () => {
-    //     io.emit('upOff', socket.id);
-    // });
-    // socket.on('down key down', () => {
-    //     io.emit('downOn', socket.id);
-    // });
-    // socket.on('down key up', () => {
-    //     io.emit('downOff', socket.id);
-    // });
 });
 
 server.listen(3000, () => {

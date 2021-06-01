@@ -68,12 +68,12 @@
           }
           if (e.key == 'ArrowUp'){
             console.log('Up');
-            //document.getElementById("left").style.backgroundColor = "burlywood";
+            document.getElementById("up").style.backgroundColor = "burlywood";
             socket.emit('upOn');
           }
           if (e.key == 'ArrowDown'){
             console.log('Down');
-            //document.getElementById("right").style.backgroundColor = "burlywood";
+            document.getElementById("down").style.backgroundColor = "burlywood";
             socket.emit('downOn');
           }
           //alert("Key pressed: "+ e.key)
@@ -91,12 +91,12 @@
           }
           if (e.key == 'ArrowUp'){
             console.log('Up');
-            //document.getElementById("left").style.backgroundColor = "burlywood";
+            document.getElementById("up").style.backgroundColor = "cadetblue";
             socket.emit('upOff');
           }
           if (e.key == 'ArrowDown'){
             console.log('Down');
-            //document.getElementById("right").style.backgroundColor = "burlywood";
+            document.getElementById("down").style.backgroundColor = "cadetblue";
             socket.emit('downOff');
           }
           //alert("Key pressed: "+ e.key)
@@ -107,6 +107,8 @@
       <ul class="inner">
         <li class="arrow"><div id="left" class="text">&#60;</div></li>
         <li class="arrow"><div id="right" class="text">&#62;</div></li>
+        <li class="arrow"><div id="up" class="text">^</div></li>
+        <li class="arrow"><div id="down" class="text">v</div></li>
       </ul>
     </div>
   </body>
