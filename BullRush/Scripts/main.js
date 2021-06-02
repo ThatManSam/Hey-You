@@ -16,56 +16,6 @@ var tagged = [];
 
 const random = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
-
-function keyDownHandler(e) {
-    for (var i = 0; i < taggers.length; i++) {
-        if (e.key == "d") {
-            taggers[i].moveRight = true;
-        }
-        else if (e.key == "a" || e.key == "ArrowLeft") {
-            taggers[i].moveLeft = true;
-        }
-        else if (e.key == "w" || e.key == "ArrowUp") {
-            taggers[i].moveUp = true;
-        }
-        else if (e.key == "s" || e.key == "ArrowDown") {
-            taggers[i].moveDown = true;
-        }
-    }
-    for (var i = 0; i < players.length; i++) {
-        if (e.key == "ArrowRight") {
-            players[i].moveRight = true;
-        }
-    }
-
-}
-
-function keyUpHandler(e) {
-    for (var i = 0; i < taggers.length; i++) {
-        if (e.key == "d") {
-            taggers[i].moveRight = false;
-        }
-        else if (e.key == "a" || e.key == "ArrowLeft") {
-            taggers[i].moveLeft = false;
-        }
-        else if (e.key == "w" || e.key == "ArrowUp") {
-            taggers[i].moveUp = false;
-        }
-        else if (e.key == "s" || e.key == "ArrowDown") {
-            taggers[i].moveDown = false;
-        }
-    }
-    for (var i = 0; i < players.length; i++) {
-        if (e.key == "ArrowRight") {
-            players[i].moveRight = false;
-        }
-    }
-}
-
-
-
 function draw() {
 
     //Draw players
