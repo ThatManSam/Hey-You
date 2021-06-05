@@ -20,22 +20,20 @@
     </style>
 </head>
 <body>
-<h1>Select Game</h1>
-<a onclick="selectGame('/multipleControllers')" style="text-decoration: none"><div class="button">Multiple Controllers</div></a>
-<a onclick="selectGame('/BullRush')" style="text-decoration: none"><div class="button">Bull Rush</div></a>
-<a onclick="selectGame('/JoysticksWithSockets')" style="text-decoration: none"><div class="button">Joysticks With Sockets</div></a>
-<a onclick="selectGame('/HammerWorkingWithSockets')" style="text-decoration: none"><div class="button">Hammer Working With Sockets</div></a>
-<a onclick="selectGame('/PongMultiplayer')" style="text-decoration: none"><div class="button">Pong Multiplayer</div></a>
-
+<h1>Please connect and select a game</h1>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    var socket = io();
-    function selectGame(game) {
-        socket.emit("selectGame", game, (response) => {
-            console.log("Redirecting to " + game);
-            window.location.pathname = '/';
-        });
-    }
+    var socketType = 'game';
+    var url = window.location.host;
+    var socket = io(url , {
+        query: {
+            "data" : socketType
+        }
+    });
+
+    socket.on('reload', () => {
+        window.location.pathname = '/game';
+    });
 </script>
 </body>
 </html>

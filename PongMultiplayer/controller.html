@@ -45,10 +45,13 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socketType = 'controller';
-        var url = window.location.href;
         var orient;
-        var socket = io.connect(url + "?data=" + socketType);
-        var socket = io();
+        var url = window.location.host;
+        var socket = io(url , {
+          query: {
+            "data" : socketType
+          }
+        });
 
         socket.on('orientation', (orientation) => {
           if (orientation === 'vertical'){
@@ -120,6 +123,10 @@
             }
           }
         }
+
+        socket.on('reconnect', () => {
+          window.location.href = 'controller';
+        });
     </script>
     <div class="outer">
       <ul class="inner">

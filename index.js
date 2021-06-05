@@ -6,17 +6,17 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 var controllerSockets = [];
+var hostController;
 
 var gameSocket;
 var game = '';
 
-app.get('/home', (req, res) => {
-    game = '';
-    res.sendFile(__dirname + '/index.html');
+app.get('/game', (req, res) => {
+    res.sendFile(__dirname + game + '/index.html');
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + game + '/index.html');
+        res.sendFile(__dirname + game + '/controller.html');
 });
 
 app.get('/pongMultiplayer', (req, res) => {
@@ -28,12 +28,12 @@ app.get('/controllerInput.js', (req, res) => {
     res.sendFile(__dirname + file);
 });
 
-app.get('/game', (req, res) => {
-    res.sendFile(__dirname + game + '/controlGame.html');
-});
+// app.get('/controller', (req, res) => {
+//     res.sendFile(__dirname + game + '/controller.html');
+// });
 
-app.get('/controller', (req, res) => {
-    res.sendFile(__dirname + game + '/controller.html');
+app.get('/selectGame', (req, res) => {
+    res.sendFile(__dirname + '/hostController.html');
 });
 
 app.get('/main.js', (req, res) => {
@@ -57,7 +57,9 @@ io.on('connection', (socket) => {
     }
     // if the socket is a controller send it to the game socket
     if (socketType == "controller"){
+        if (hostController == null) hostController = socket.id;
         controllerSockets.push(socket.id);
+        if (game == '') io.to(hostController).emit("select game");
         console.log("Triggering emit to controller with response");
         io.to(gameSocket).emit('controller connection', socket.id);
     }
@@ -74,7 +76,7 @@ io.on('connection', (socket) => {
         if (gameSocket != null && socket.id == gameSocket){
             console.log("Reset game socket");
             gameSocket = null;
-            game = '';
+            io.emit('reconnect');
         }
 
         // if a controller disconnects
@@ -86,6 +88,12 @@ io.on('connection', (socket) => {
                 controllerSockets.splice(index, 1);
                 // tell game to remove the controller
                 io.to(gameSocket).emit('controller disconnection', socket.id);
+                if (hostController == socket.id) {
+                    if (controllerSockets.length > 0) {
+                        hostController = controllerSockets[0];
+                    }
+                    else hostController = null;
+                }
             }
             catch(e){
                 console.log("ERROR: " + e);
@@ -98,6 +106,7 @@ io.on('connection', (socket) => {
     socket.on('selectGame', (selected, callback) => {
         console.log("New Game selected: " + selected);
         game = selected;
+        io.to(gameSocket).emit('reload');
         callback();
     });
 
