@@ -282,7 +282,8 @@ class JoystickController
         socket.emit('upOff');
       }
       if(joystick1.yPlace == 0){
-
+        socket.emit('upOff');
+        socket.emit('downOff');
       }
 
     }
