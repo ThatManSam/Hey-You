@@ -317,7 +317,7 @@ class player {
                 case "downOff":
                     this.moveDown = false;
                     break;
-                case "disconnected":
+                case "controller disconnect":
                     this.quit = true;
                     break;
                 default:
@@ -531,7 +531,6 @@ class player {
 
         // Emit colour
         emitColour(this.socket, this.colour);
-        
 
     }
 

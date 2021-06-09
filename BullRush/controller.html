@@ -108,16 +108,17 @@
           //socket.emit('key up', e.key);
 
           socket.on('playerColour', (colour) =>{
-            document.getElementById("color-indicator").style.outlineColor = color;
+            console.log("Setting colour to: " + colour);
+            document.getElementById("color-indicator").style.backgroundColor = colour;
           });
         }
 
         socket.on('reconnect', () => {
-          window.location.href = 'controller';
+          window.location.href = '';
         });
     </script>
-    <div class="outer">
-      <ul class="inner" id="color-indicator">
+    <div class="outer" id="color-indicator">
+      <ul class="inner">
         <li class="arrow" ontouchstart="buttondown({key: 'ArrowLeft'})" ontouchend="buttonup({key: 'ArrowLeft'})"><div id="left" class="text">&#60;</div></li>
         <li class="arrow" ontouchstart="buttondown({key: 'ArrowRight'})" ontouchend="buttonup({key: 'ArrowRight'})"><div id="right" class="text">&#62;</div></li>
         <li class="arrow" ontouchstart="buttondown({key: 'ArrowUp'})" ontouchend="buttonup({key: 'ArrowUp'})"><div id="up" class="text">^</div></li>

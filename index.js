@@ -103,19 +103,39 @@ io.on('connection', (socket) => {
         console.log(socketType + ' user disconnected');
     });
 
-    socket.on('selectGame', (selected, callback) => {
-        console.log("New Game selected: " + selected);
-        game = selected;
-        io.to(gameSocket).emit('reload');
-        callback();
-    });
+    // socket.on('selectGame', (selected, callback) => {
+    //     console.log("New Game selected: " + selected);
+    //     game = selected;
+    //     io.to(gameSocket).emit('reload');
+    //     callback();
+    // });
 
-    socket.on('playerColour', (controller, colour) => {
-        io.to(controller).emit('playerColour', colour);
-    });
+    // socket.on('playerColour', (controller, colour) => {
+    //     console.log("Emitting colour: " + colour + " to: " + controller);
+    //     io.to(controller).emit('playerColour', colour);
+    // });
 
-    socket.onAny((event) => {
-        io.emit(event, socket.id);
+    socket.onAny((event, ...args) => {
+        switch (event) {
+            case "playerColour":
+                var controller = args[0];
+                var colour = args[1];
+                console.log("Emitting colour: " + colour + " to: " + controller);
+                io.to(controller).emit('playerColour', colour);
+                break;
+            
+            case "selectGame":
+                var selected = args[0];
+                var callback = args[1];
+                console.log("New Game selected: " + selected);
+                game = selected;
+                io.to(gameSocket).emit('reload');
+                callback();
+            default:
+                console.log("Remitted event: " + event);
+                io.emit(event, socket.id);
+                break;
+        }
     })
 });
 

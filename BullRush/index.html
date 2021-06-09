@@ -38,6 +38,7 @@
 
             function emitColour(id, playerColor){
                 socket.emit('playerColour', id, playerColor);
+                console.log("Emited colour " + playerColor + " to " + id);
             }
 
             // socket.on('left down', function() {
