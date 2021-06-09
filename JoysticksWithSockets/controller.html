@@ -267,23 +267,23 @@ class JoystickController
         socket.emit('leftOff');
       }
       if(joystick1.xPlace == 0){
-        socket.emit('right key up');
-        socket.emit('left key up');
+        socket.emit('rightOff');
+        socket.emit('leftOff');
       }
       //Up and down
       if(joystick1.yPlace < 0){
-        //alert('' + joystick1.xPlace);
         console.log('Up');
-        socket.emit('up key down');
-        // socket.emit('right key up');
+        socket.emit('upOn');
+        socket.emit('downOff');
       }
       if(joystick1.yPlace > 0){
         console.log('Down');
-        // socket.emit('right key down');
-        socket.emit('up key up');
+        socket.emit('downOn');
+        socket.emit('upOff');
       }
       if(joystick1.yPlace == 0){
-
+        socket.emit('upOff');
+        socket.emit('downOff');
       }
 
     }
