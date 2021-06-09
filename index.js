@@ -101,6 +101,10 @@ io.on('connection', (socket) => {
         callback();
     });
 
+    socket.on('playerColour', (controller, colour) => {
+        io.to(controller).emit('playerColour', colour);
+    });
+
     socket.onAny((event) => {
         io.emit(event, socket.id);
     })

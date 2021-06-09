@@ -33,6 +33,10 @@
                 socketUpdate(id, event);
             });
 
+            function emitColour(id, playerColor){
+                socket.emit('playerColour', id, playerColor);
+            }
+
             // socket.on('left down', function() {
             //     leftPressed = true;
             //     //document.dispatchEvent(leftarrowdown);

@@ -29,6 +29,8 @@
           display: flex;
           align-items: center;
           justify-items: center;
+          outline-width: 2px;
+          outline-color: white;
         }
 
         html, body {
@@ -101,10 +103,14 @@
           }
           //alert("Key pressed: "+ e.key)
           //socket.emit('key up', e.key);
+
+          socket.on('playerColour', (colour) =>{
+            document.getElementById("color-indicator").style.outlineColor = color;
+          });
         }
     </script>
     <div class="outer">
-      <ul class="inner">
+      <ul class="inner" id="color-indicator">
         <li class="arrow" ontouchstart="buttondown({key: 'ArrowLeft'})" ontouchend="buttonup({key: 'ArrowLeft'})"><div id="left" class="text">&#60;</div></li>
         <li class="arrow" ontouchstart="buttondown({key: 'ArrowRight'})" ontouchend="buttonup({key: 'ArrowRight'})"><div id="right" class="text">&#62;</div></li>
         <li class="arrow" ontouchstart="buttondown({key: 'ArrowUp'})" ontouchend="buttonup({key: 'ArrowUp'})"><div id="up" class="text">^</div></li>

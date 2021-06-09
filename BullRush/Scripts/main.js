@@ -530,6 +530,8 @@ class player {
         }
 
         // Emit colour
+        emitColour(this.socket, this.colour);
+        
 
     }
 
