@@ -103,9 +103,12 @@
     <script>
         // Scripts for socket.io
         var socketType = 'game';
-        var url = window.location.href;
-        var socket = io.connect(url + "?data=" + socketType);
-        var socket = io();
+        var url = window.location.host;
+        var socket = io(url , {
+          query: {
+            "data" : socketType
+          }
+        });
 
         var controllers = [];
 

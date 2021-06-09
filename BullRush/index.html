@@ -19,9 +19,12 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socketType = 'game';
-            var url = window.location.href;
-            var socket = io.connect(url + "?data=" + socketType);
-            //var socket = io();
+            var url = window.location.host;
+            var socket = io(url , {
+                query: {
+                    "data" : socketType
+                }
+            });
     
             socket.on('controller connection', (id)=>{
                 console.log("New Controller: " + id);

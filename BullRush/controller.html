@@ -47,9 +47,12 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socketType = 'controller';
-        var url = window.location.href;
-        var socket = io.connect(url + "?data=" + socketType);
-        var socket = io();
+        var url = window.location.host;
+        var socket = io(url , {
+          query: {
+            "data" : socketType
+          }
+        });
 
         var form = document.getElementById('form');
         var input = document.getElementById('input');
@@ -108,6 +111,10 @@
             document.getElementById("color-indicator").style.outlineColor = color;
           });
         }
+
+        socket.on('reconnect', () => {
+          window.location.href = 'controller';
+        });
     </script>
     <div class="outer">
       <ul class="inner" id="color-indicator">
