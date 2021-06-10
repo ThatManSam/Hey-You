@@ -50,18 +50,19 @@
         var url = window.location.host;
         var socket = io(url , {
           query: {
-            "data" : socketType
+            "data" : socketType,
+            "host" : true
           }
         });
 
         socket.on('reconnect', () => {
-          window.location.href = 'controller';
+          window.location.href = '';
         });
 
         function selectGame(game) {
             socket.emit("selectGame", game, (response) => {
                 console.log("Redirecting to " + game);
-                window.location.pathname = '/';
+                window.location.pathname = '';
             });
         }
     </script>
