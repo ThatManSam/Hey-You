@@ -151,8 +151,13 @@ function playerAdd(newSocket) {
 }
 
 function playerRemove(team, player) {
-    team = arrayRemove(team, player);
-    if (team.length == 0) {
+    if (team == "p"){
+        players = arrayRemove(players, player);
+    } else {
+        taggers = arrayRemove(taggers, player);
+    }
+
+    if (players.length == 0 || taggers.length == 0) {
         gameOver = true;
     }
 
@@ -162,7 +167,7 @@ function playerRemove(team, player) {
 function playerMove() {
     for (var i = 0; i < players.length; i++) {
         if (players[i].quit == true) {
-            playerRemove(players, players[i]);
+            playerRemove("p", players[i]);
         } else {
             playersInSafeZone += players[i].move(canvas, activeSafeZone, safeZone, tempSafeZone);
             for (var j = 0; j < taggers.length; j++) {
@@ -182,7 +187,7 @@ function playerMove() {
 function taggerMove() {
     for (var i = 0; i < taggers.length; i++) {
         if (taggers[i].quit == true) {
-            playerRemove(taggers, i);
+            playerRemove("t", taggers[i]);
         } else {
             taggers[i].move(canvas, activeSafeZone, safeZone, tempSafeZone);
         }
@@ -283,7 +288,12 @@ class player {
         // Only allow updates for identical sockets?
         //console.log("Does socket: " + this.socket + " = " + num);
         var result = (num === this.socket);
+<<<<<<< HEAD
         //console.log("Result: " + result);
+=======
+        console.log("Result: " + result);
+        console.log(e);
+>>>>>>> 1e4934361aaa745c12dc81eb8fc6980b61f4135c
         if (num === this.socket) {
             switch (e) {
                 case "upOn":
@@ -318,7 +328,11 @@ class player {
                     this.moveDown = false;
                     break;
                 case "controller disconnection":
+<<<<<<< HEAD
                     console.log("Contoller Disconnect: " + this.socket);
+=======
+                    console.log("Controller dc signal recieved for player: " + this.socket + " In team: " + this.type);
+>>>>>>> 1e4934361aaa745c12dc81eb8fc6980b61f4135c
                     this.quit = true;
                     break;
                 default:
