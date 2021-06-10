@@ -44,6 +44,30 @@ function gameStart(timeout = 200) {
     }, timeout);
 }
 
+function setBackground() {
+    var num = Math.floor(Math.random() * 4);  //0 - 4
+    if(num == 0) {
+        document.body.className = "animated-shape";
+    }
+    else if(num == 1) {
+        document.body.className = "meteor";
+        
+    }
+    else if(num == 2) {
+        document.body.className = "circles";
+
+        
+    }
+    else if(num == 3) {
+        document.body.className = "waves";
+        
+    }
+    else if(num == 4) {
+        document.body.className = "lines";
+        
+    }
+}
+
 function updatePlayerDisplayAtGameStart() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "100px Arial";
