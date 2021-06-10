@@ -67,11 +67,11 @@
           bottom: 0px;
         }
         .dot {
-          height: 50px;
-          width: 50px;
+          height: 150px;
+          width: 150px;
           color: #fc0317;
           background-color: #fc0317;
-          border-radius: 50%;
+          border-radius: 100%;
           display: block; 
           margin: auto; 
           position: absolute; 
@@ -100,13 +100,9 @@
 
     -->
     <hr>
-    <div style="border: 1px solid red; width: 128px; height: 128px;" class="center">
+    <div style="border: 1px solid red; width: 400px; height: 400px;" class="center">
       
-<<<<<<< HEAD
       <img src="joystickbase" class="center"/>
-=======
-      <img src="joystick-base.png" class="center"/>
->>>>>>> 1e4934361aaa745c12dc81eb8fc6980b61f4135c
       <!--<div id="stick1" class="center">
       <img src="images/joystick-red.png" class="center"/>		
       </div>
@@ -144,6 +140,8 @@ class JoystickController
   {
     this.id = stickID;
     let stick = document.getElementById(stickID);
+    
+    
 
     // location from which drag begins, used to calculate offsets
     this.dragStart = null;
@@ -251,7 +249,7 @@ class JoystickController
 }
 ///////////////////////////////////////////////////////////////////////
 
-    let joystick1 = new JoystickController("stick1", 64, 8);
+    let joystick1 = new JoystickController("stick1", 200, 8);
 
     function update()
     {
