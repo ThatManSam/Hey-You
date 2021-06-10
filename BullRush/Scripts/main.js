@@ -151,8 +151,13 @@ function playerAdd(newSocket) {
 }
 
 function playerRemove(team, player) {
-    team = arrayRemove(team, player);
-    if (team.length == 0) {
+    if (team == "p"){
+        players = arrayRemove(players, player);
+    } else {
+        taggers = arrayRemove(taggers, player);
+    }
+
+    if (players.length == 0 || taggers.length == 0) {
         gameOver = true;
     }
 
@@ -162,7 +167,7 @@ function playerRemove(team, player) {
 function playerMove() {
     for (var i = 0; i < players.length; i++) {
         if (players[i].quit == true) {
-            playerRemove(players, players[i]);
+            playerRemove("p", players[i]);
         } else {
             playersInSafeZone += players[i].move(canvas, activeSafeZone, safeZone, tempSafeZone);
             for (var j = 0; j < taggers.length; j++) {
@@ -182,7 +187,7 @@ function playerMove() {
 function taggerMove() {
     for (var i = 0; i < taggers.length; i++) {
         if (taggers[i].quit == true) {
-            playerRemove(taggers, i);
+            playerRemove("t", taggers[i]);
         } else {
             taggers[i].move(canvas, activeSafeZone, safeZone, tempSafeZone);
         }
@@ -284,6 +289,7 @@ class player {
         console.log("Does socket: " + this.socket + " = " + num);
         var result = (num === this.socket);
         console.log("Result: " + result);
+        console.log(e);
         if (num === this.socket) {
             switch (e) {
                 case "upOn":
@@ -317,7 +323,8 @@ class player {
                 case "downOff":
                     this.moveDown = false;
                     break;
-                case "controller disconnect":
+                case "controller disconnection":
+                    console.log("Controller dc signal recieved for player: " + this.socket + " In team: " + this.type);
                     this.quit = true;
                     break;
                 default:
