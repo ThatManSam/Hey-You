@@ -12,14 +12,17 @@ var gameSocket;
 var game = '';
 
 app.get('/game', (req, res) => {
-    res.sendFile(__dirname + game + '/index.html');
+    if (game == '/pongMultiplayer'){
+        res.sendFile(__dirname + game + '/pongMultiplayer.html');
+    }
+    else res.sendFile(__dirname + game + '/index.html');
 });
 
 app.get('/', (req, res) => {
         res.sendFile(__dirname + game + '/controller.html');
 });
 
-app.get('/pongMultiplayer', (req, res) => {
+app.get('/PongMultiplayer', (req, res) => {
     res.sendFile(__dirname + game + '/pongMultiplayer.html');
 });
 
@@ -36,12 +39,16 @@ app.get('/selectGame', (req, res) => {
     res.sendFile(__dirname + '/hostController.html');
 });
 
+app.get('/joystickbase', (req, res) => {
+    res.sendFile(__dirname + '/joy-stick-base.png');
+});
+
 app.get('/main.js', (req, res) => {
     console.log(__dirname + game + '/Scripts/main.js');
     res.sendFile(__dirname + game + '/Scripts/main.js');
 });
 
-io.on('connection', (socket) => {
+io.on('connection', (socket, host) => {
     // getting the type from the socket (game or controller)
     var socketType = socket.handshake.query.data;
     // Show the id of the new socket
@@ -62,6 +69,13 @@ io.on('connection', (socket) => {
         if (game == '') io.to(hostController).emit("select game");
         console.log("Triggering emit to controller with response");
         io.to(gameSocket).emit('controller connection', socket.id);
+    }
+
+    if (host) {
+        if (hostController != null){
+            io.to(socket).emit('reconnect');
+            console.log("There is already a host controller");
+        }
     }
 
     socket.on('connection callback', (response) =>{
@@ -131,6 +145,7 @@ io.on('connection', (socket) => {
                 game = selected;
                 io.to(gameSocket).emit('reload');
                 callback();
+
             default:
                 console.log("Remitted event: " + event);
                 io.emit(event, socket.id);

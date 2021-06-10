@@ -310,10 +310,9 @@ class player {
 
     socketEventHandler(num, e) {
         // Only allow updates for identical sockets?
-        console.log("Does socket: " + this.socket + " = " + num);
+        //console.log("Does socket: " + this.socket + " = " + num);
         var result = (num === this.socket);
-        console.log("Result: " + result);
-        console.log(e);
+        //console.log("Result: " + result);
         if (num === this.socket) {
             switch (e) {
                 case "upOn":
