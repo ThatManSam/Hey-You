@@ -288,12 +288,7 @@ class player {
         // Only allow updates for identical sockets?
         //console.log("Does socket: " + this.socket + " = " + num);
         var result = (num === this.socket);
-<<<<<<< HEAD
         //console.log("Result: " + result);
-=======
-        console.log("Result: " + result);
-        console.log(e);
->>>>>>> 1e4934361aaa745c12dc81eb8fc6980b61f4135c
         if (num === this.socket) {
             switch (e) {
                 case "upOn":
@@ -328,11 +323,7 @@ class player {
                     this.moveDown = false;
                     break;
                 case "controller disconnection":
-<<<<<<< HEAD
-                    console.log("Contoller Disconnect: " + this.socket);
-=======
                     console.log("Controller dc signal recieved for player: " + this.socket + " In team: " + this.type);
->>>>>>> 1e4934361aaa745c12dc81eb8fc6980b61f4135c
                     this.quit = true;
                     break;
                 default:
