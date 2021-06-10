@@ -255,33 +255,33 @@ class JoystickController
       //document.getElementById("status2").innerText = "Joystick 2: " + JSON.stringify(joystick2.value);
 
       //Left and Right
-      if(joystick1.xPlace < 0){
+      if(joystick1.xPlace < -0.25){
         //alert('' + joystick1.xPlace);
         console.log('Left');
         socket.emit('leftOn');
         socket.emit('rightOff');
       }
-      if(joystick1.xPlace > 0){
+      if(joystick1.xPlace > 0.25){
         console.log('Right');
         socket.emit('rightOn');
         socket.emit('leftOff');
       }
-      if(joystick1.xPlace == 0){
+      if(joystick1.xPlace > -0.25 && joystick1.xPlace < 0.25){
         socket.emit('rightOff');
         socket.emit('leftOff');
       }
       //Up and down
-      if(joystick1.yPlace < 0){
+      if(joystick1.yPlace < -0.25){
         console.log('Up');
         socket.emit('upOn');
         socket.emit('downOff');
       }
-      if(joystick1.yPlace > 0){
+      if(joystick1.yPlace > 0.25){
         console.log('Down');
         socket.emit('downOn');
         socket.emit('upOff');
       }
-      if(joystick1.yPlace == 0){
+      if(joystick1.yPlace > -0.25 && joystick1.yPlace < 0.25){
         socket.emit('upOff');
         socket.emit('downOff');
       }
