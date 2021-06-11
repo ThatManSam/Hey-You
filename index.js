@@ -64,7 +64,7 @@ io.on('connection', (socket, host) => {
     // getting the type from the socket (game or controller)
     var socketType = socket.handshake.query.data;
     // Show the id of the new socket
-    console.log(socket.id +' socket connected: ' + socketType);
+    console.log(socket.id +' socket connected: ' + socketType + ' ' + controllerSockets.length);
     // if the socket is a game save it to the gameSocket variable (if there isn't already a game)
     if (socketType == "game" && gameSocket != null) console.log("Game already exists");
     if (socketType == "game" && gameSocket == null) {
