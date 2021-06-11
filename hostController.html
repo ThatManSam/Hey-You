@@ -54,9 +54,9 @@
           }
         });
 
-        socket.on('reconnect', () => {
-          window.location.href = '';
-        });
+        // socket.on('reconnect', () => {
+        //   window.location.href = '';
+        // });
 
         function selectGame(game) {
             socket.emit("selectGame", game, (response) => {
