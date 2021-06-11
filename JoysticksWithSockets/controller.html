@@ -67,8 +67,8 @@
           bottom: 0px;
         }
         .dot {
-          height: 50px;
-          width: 50px;
+          height: 150px;
+          width: 150px;
           color: #fc0317;
           background-color: #fc0317;
           border-radius: 50%;
@@ -85,7 +85,7 @@
   <body>
     <div class="outer">
       <ul class="inner">
-        <h1></h1>
+        <h1>                                                           </h1>
         <!--
         <li class="arrow"><div id="left" class="text">&#60;</div></li>
         <li class="arrow"><div id="right" class="text">&#62;</div></li>
@@ -100,7 +100,7 @@
 
     -->
     <hr>
-    <div style="border: 1px solid red; width: 128px; height: 128px;" class="center">
+    <div style="border: 1px solid red; width: 400px; height: 400px;" class="center">
       
       <img src="joystickbase" class="center"/>
       <!--<div id="stick1" class="center">
@@ -124,7 +124,7 @@
       document.addEventListener('keydown', buttondown, false);
       document.addEventListener('keyup', buttonup, false);
       socket.on('connect', () => {
-        document.getElementsByTagName("h1")[0].innerHTML = socket.id;
+        //document.getElementsByTagName("h1")[0].innerHTML = socket.id;
       });
 
       var left = document.getElementById('left');
@@ -140,6 +140,8 @@ class JoystickController
   {
     this.id = stickID;
     let stick = document.getElementById(stickID);
+    
+    
 
     // location from which drag begins, used to calculate offsets
     this.dragStart = null;
@@ -247,7 +249,7 @@ class JoystickController
 }
 ///////////////////////////////////////////////////////////////////////
 
-    let joystick1 = new JoystickController("stick1", 64, 8);
+    let joystick1 = new JoystickController("stick1", 200, 8);
 
     function update()
     {
