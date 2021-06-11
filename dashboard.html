@@ -20,11 +20,11 @@
     </style>
 </head>
 <body>
-<button>Reload</button>
+<button onclick="selectGame()">Quit game</button>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    var socketType = 'game';
+    var socketType = '';
     var url = window.location.host;
     var socket = io(url , {
         query: {
@@ -32,9 +32,11 @@
         }
     });
 
-    socket.on('reload', () => {
-        window.location.pathname = '/game';
-    });
+    function selectGame() {
+            socket.emit("selectGame", '', (response) => {
+                window.location.pathname = '';
+            });
+        }
 </script>
 </body>
 </html>
