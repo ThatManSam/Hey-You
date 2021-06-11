@@ -152,7 +152,7 @@ function drawSafeZone() {
 // Have to add the socket here
 function playerAdd(newSocket) {
     var socketID = String(newSocket);
-    if (taggers.length == 0 || players.length % 13 == 0 && players.length >= 1) {
+    if (taggers.length == 0 || players.length % 8 == 0 && players.length >= 1) {
         console.log("Added tagger: " + newSocket);
         taggers.push(new player(canvas.width / 4 + random(0, canvas.width / 2), random(30, canvas.height - 30), 1, socketID, canvas, safeZone, activeSafeZone));
 
@@ -534,14 +534,14 @@ class player {
         this.moveDown = false;
 
         switch (this.type) {
-            case 0:
+            case 0: //Player
                 this.colour = ("#0" + randomColor()); //Red Minor 
                 this.dx = random(3, 4);
                 this.dy = random(3, 4);
                 this.radius = random(12, 19);
                 break;
 
-            case 1:
+            case 1: //Tagger
                 this.colour = ("#FF0000"); //Red
                 this.dx = random(2, 5);
                 this.dy = random(2, 5);
