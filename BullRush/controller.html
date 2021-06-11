@@ -67,8 +67,8 @@
           bottom: 0px;
         }
         .dot {
-          height: 50px;
-          width: 50px;
+          height: 150px;
+          width: 150px;
           color: #fc0317;
           background-color: #fc0317;
           border-radius: 50%;
@@ -100,7 +100,7 @@
 
     -->
     <hr>
-    <div style="border: 1px solid red; width: 128px; height: 128px;" class="center">
+    <div style="border: 1px solid red; width: 400px; height: 400px;" class="center">
       
       <img src="joystickbase" class="center"/>
       <!--<div id="stick1" class="center">
@@ -258,7 +258,7 @@ class JoystickController
 }
 ///////////////////////////////////////////////////////////////////////
 
-    let joystick1 = new JoystickController("stick1", 64, 8);
+    let joystick1 = new JoystickController("stick1", 200, 8);
 
     function update()
     {
@@ -266,36 +266,37 @@ class JoystickController
       //document.getElementById("status2").innerText = "Joystick 2: " + JSON.stringify(joystick2.value);
 
       //Left and Right
-      if(joystick1.xPlace < 0){
+      if(joystick1.xPlace < -0.25){
         //alert('' + joystick1.xPlace);
         console.log('Left');
         socket.emit('leftOn');
         socket.emit('rightOff');
       }
-      if(joystick1.xPlace > 0){
+      if(joystick1.xPlace > 0.25){
         console.log('Right');
         socket.emit('rightOn');
         socket.emit('leftOff');
       }
-      if(joystick1.xPlace == 0){
+      if(joystick1.xPlace > -0.25 && joystick1.xPlace < 0.25){
         socket.emit('rightOff');
         socket.emit('leftOff');
       }
       //Up and down
-      if(joystick1.yPlace < 0){
+      if(joystick1.yPlace < -0.25){
         console.log('Up');
         socket.emit('upOn');
         socket.emit('downOff');
       }
-      if(joystick1.yPlace > 0){
+      if(joystick1.yPlace > 0.25){
         console.log('Down');
         socket.emit('downOn');
         socket.emit('upOff');
       }
-      if(joystick1.yPlace == 0){
+      if(joystick1.yPlace > -0.25 && joystick1.yPlace < 0.25){
         socket.emit('upOff');
         socket.emit('downOff');
       }
+
 
     }
 
