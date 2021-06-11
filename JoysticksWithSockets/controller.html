@@ -71,7 +71,7 @@
           width: 150px;
           color: #fc0317;
           background-color: #fc0317;
-          border-radius: 100%;
+          border-radius: 50%;
           display: block; 
           margin: auto; 
           position: absolute; 
@@ -85,7 +85,7 @@
   <body>
     <div class="outer">
       <ul class="inner">
-        <h1></h1>
+        <h1>                                                           </h1>
         <!--
         <li class="arrow"><div id="left" class="text">&#60;</div></li>
         <li class="arrow"><div id="right" class="text">&#62;</div></li>
@@ -102,8 +102,8 @@
     <hr>
     <div style="border: 1px solid red; width: 400px; height: 400px;" class="center">
       
-      <img src="joystickbase" class="center"/>
-      <!--<div id="stick1" class="center">
+      <!--<img src="joystickbase" class="center"/>
+      <div id="stick1" class="center">
       <img src="images/joystick-red.png" class="center"/>		
       </div>
       -->
@@ -124,7 +124,7 @@
       document.addEventListener('keydown', buttondown, false);
       document.addEventListener('keyup', buttonup, false);
       socket.on('connect', () => {
-        document.getElementsByTagName("h1")[0].innerHTML = socket.id;
+        //document.getElementsByTagName("h1")[0].innerHTML = socket.id;
       });
 
       var left = document.getElementById('left');
