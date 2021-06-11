@@ -53,13 +53,13 @@
           }
         });
 
-        socket.on('orientation', (orientation) => {
-          if (orientation === 'vertical'){
+        socket.on('connection callback', (response) => {
+          if (response.orientation === 'vertical'){
             orient = orientation;
             document.getElementById('up').parentElement.style.display = 'inline-block';
             document.getElementById('down').parentElement.style.display = 'inline-block';
           }
-          if (orientation === 'horizontal'){
+          if (response.orientation === 'horizontal'){
             orient = orientation;
             document.getElementById('right').parentElement.style.display = 'inline-block';
             document.getElementById('left').parentElement.style.display = 'inline-block';

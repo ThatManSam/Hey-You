@@ -61,7 +61,7 @@
         function selectGame(game) {
             socket.emit("selectGame", game, (response) => {
                 console.log("Redirecting to " + game);
-                window.location.pathname = '';
+                //window.location.pathname = '';
             });
         }
     </script>
