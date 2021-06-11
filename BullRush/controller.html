@@ -36,10 +36,10 @@
           width: 75%;
         }
 
-        h1 {
+        #color-indicator {
           text-align: center;
           width: 100%;
-          font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+          height: 30px;
           color: white;
           font-size: 30px;
           text-decoration: none;
@@ -85,7 +85,7 @@
   <body>
     <div class="outer">
       <ul class="inner">
-        <h1 id="color-indicator"></h1>
+        <div id="color-indicator"></div>
         <!--
         <li class="arrow"><div id="left" class="text">&#60;</div></li>
         <li class="arrow"><div id="right" class="text">&#62;</div></li>
@@ -102,7 +102,7 @@
     <hr>
     <div style="border: 1px solid red; width: 128px; height: 128px;" class="center">
       
-      <img src="images/joystick-base.png" class="center"/>
+      <img src="joystickbase" class="center"/>
       <!--<div id="stick1" class="center">
       <img src="images/joystick-red.png" class="center"/>		
       </div>
@@ -126,7 +126,7 @@
       document.addEventListener('keydown', buttondown, false);
       document.addEventListener('keyup', buttonup, false);
       socket.on('connect', () => {
-        document.getElementsByTagName("h1")[0].innerHTML = socket.id;
+        //document.getElementsByTagName("h1")[0].innerHTML = socket.id;
       });
 
       socket.on('playerColour', (colour) =>{

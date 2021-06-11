@@ -12,14 +12,18 @@ var gameSocket;
 var game = '';
 
 app.get('/game', (req, res) => {
-    if (game == '/pongMultiplayer'){
-        res.sendFile(__dirname + game + '/pongMultiplayer.html');
+    if (game == '/PongMultiplayer'){
+        res.sendFile(__dirname + '/PongMultiplayer/pongMultiplayer.html');
     }
     else res.sendFile(__dirname + game + '/index.html');
 });
 
 app.get('/', (req, res) => {
         res.sendFile(__dirname + game + '/controller.html');
+});
+
+app.get('/Sounds', (req, res) => {
+    res.sendFile(__dirname + game + '/Sounds');
 });
 
 app.get('/PongMultiplayer', (req, res) => {
@@ -40,12 +44,20 @@ app.get('/selectGame', (req, res) => {
 });
 
 app.get('/joystickbase', (req, res) => {
-    res.sendFile(__dirname + '/joy-stick-base.png');
+    res.sendFile(__dirname + game + '/joystick-base.png');
 });
 
 app.get('/main.js', (req, res) => {
     console.log(__dirname + game + '/Scripts/main.js');
     res.sendFile(__dirname + game + '/Scripts/main.js');
+});
+
+app.get('/qr-code', (req, res) => {
+    res.sendFile(__dirname + '/qr.png');
+});
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(__dirname + '/dashboard.html');
 });
 
 io.on('connection', (socket, host) => {
@@ -64,19 +76,19 @@ io.on('connection', (socket, host) => {
     }
     // if the socket is a controller send it to the game socket
     if (socketType == "controller"){
-        if (hostController == null) hostController = socket.id;
+        //if (hostController == null) hostController = socket.id;
         controllerSockets.push(socket.id);
         if (game == '') io.to(hostController).emit("select game");
         console.log("Triggering emit to controller with response");
         io.to(gameSocket).emit('controller connection', socket.id);
     }
 
-    if (host) {
-        if (hostController != null){
-            io.to(socket).emit('reconnect');
-            console.log("There is already a host controller");
-        }
-    }
+    // if (host) {
+    //     if (hostController != null){
+    //         io.to(socket).emit('reconnect');
+    //         console.log("There is already a host controller");
+    //     }
+    // }
 
     socket.on('connection callback', (response) =>{
         if (response.orientation !== null) {
