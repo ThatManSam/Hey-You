@@ -69,8 +69,8 @@
         .dot {
           height: 150px;
           width: 150px;
-          color: #fc0317;
-          background-color: #fc0317;
+          color: #ff0000;
+          background-color: #ff0000;
           border-radius: 50%;
           display: block; 
           margin: auto; 
@@ -84,23 +84,23 @@
   </head>
   <body>
     <div class="outer">
-      <ul class="inner">
+      <!--<ul class="inner">
         <div id="color-indicator"></div>
-        <!--
-        <li class="arrow"><div id="left" class="text">&#60;</div></li>
+                <li class="arrow"><div id="left" class="text">&#60;</div></li>
         <li class="arrow"><div id="right" class="text">&#62;</div></li>
-        -->
+        
       </ul>
     </div>
+    -->
     <!--
         Joystick Controls.
     <hr>
     <div id="status1" style="color: red;">Joystick 1</div>
     <div id="status2" style="color: blue;">Joystick 2</div>
-
+<hr>
     -->
-    <hr>
-    <div style="border: 1px solid red; width: 400px; height: 400px;" class="center">
+    
+    <div style="border: 1px solid white; width: 400px; height: 400px;" class="center">
       
       <!--<img src="joystickbase" class="center"/>-->
       <!--<div id="stick1" class="center">
@@ -131,7 +131,11 @@
 
       socket.on('playerColour', (colour) =>{
         console.log("Setting colour to: " + colour);
-        document.getElementById("color-indicator").style.backgroundColor = colour;
+        document.body.style.backgroundColor = colour;
+        if (colour == "#FF0000"){
+            document.getElementsByClassName("dot")[0].style.color = "#ffffff";
+            document.getElementsByClassName("dot")[0].style.backgroundColor = "#ffffff";
+        }
       });
 
       socket.on('reconnect', () => {
