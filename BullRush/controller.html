@@ -149,6 +149,10 @@ class JoystickController
   // deadzone: joystick must move at least this amount from origin to register value change
   constructor( stickID, maxDistance, deadzone )
   {
+    this.left = false;
+    this.right = false;
+    this.up = false;
+    this.down = false;
     this.id = stickID;
     let stick = document.getElementById(stickID);
 
@@ -266,33 +270,45 @@ class JoystickController
       //document.getElementById("status2").innerText = "Joystick 2: " + JSON.stringify(joystick2.value);
 
       //Left and Right
-      if(joystick1.xPlace < -0.25){
+      if(joystick1.xPlace < -0.25 && joystick1.left == false){
         //alert('' + joystick1.xPlace);
+        joystick1.right = false;
         console.log('Left');
         socket.emit('leftOn');
         socket.emit('rightOff');
+        joystick1.left = true;
       }
-      if(joystick1.xPlace > 0.25){
+      if(joystick1.xPlace > 0.25 && joystick1.right == false){
+        joystick1.left = false;
         console.log('Right');
         socket.emit('rightOn');
         socket.emit('leftOff');
+        joystick1.right = true;
       }
-      if(joystick1.xPlace > -0.25 && joystick1.xPlace < 0.25){
+      if(joystick1.xPlace > -0.25 && joystick1.xPlace < 0.25 && (joystick1.left == true || joystick1.right == true)){
+        joystick1.left = false;
+        joystick1.right = false;
         socket.emit('rightOff');
         socket.emit('leftOff');
       }
       //Up and down
-      if(joystick1.yPlace < -0.25){
+      if(joystick1.yPlace < -0.25 && joystick1.up == false){
+        joystick1.down = false;
         console.log('Up');
         socket.emit('upOn');
         socket.emit('downOff');
+        joystick1.up = true;
       }
-      if(joystick1.yPlace > 0.25){
+      if(joystick1.yPlace > 0.25 && joystick1.down == false){
+        joystick1.up = false;
         console.log('Down');
         socket.emit('downOn');
         socket.emit('upOff');
+        joystick1.down = true;
       }
-      if(joystick1.yPlace > -0.25 && joystick1.yPlace < 0.25){
+      if(joystick1.yPlace > -0.25 && joystick1.yPlace < 0.25 && (joystick1.up == true || joystick1.down == true)){
+        joystick1.up = false;
+        joystick1.down = false;
         socket.emit('upOff');
         socket.emit('downOff');
       }
